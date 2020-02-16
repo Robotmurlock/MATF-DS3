@@ -38,6 +38,11 @@ std::pair<double, double> interval_intersection(const std::vector<std::vector<do
 
     for(unsigned p=0; p<m; p++)
     {
+        if(A.at(p).at(0) == 0)
+        {
+            if(b.at(p) > 0)
+                return std::make_pair(+INF, -INF);
+        }
         auto value = b.at(p)/A.at(p).at(0);
         if(A.at(p).at(0) < 0)
             right = std::min(right, value);
@@ -164,11 +169,12 @@ void replace_var_with_function(std::vector<std::vector<double> >& A, std::vector
     }
 }
 
-int main()
+int main(int argc, char** argv)
 {
     // *INPUT FILE*
+    const char* path = (argc >= 2) ? argv[1] : "input.txt";
 
-    std::ifstream input("input.txt");
+    std::ifstream input(path);
     if(input.fail())
     {
         std::cout << "Failed to open \"input.txt\"!" << std::endl;

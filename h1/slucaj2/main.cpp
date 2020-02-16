@@ -3,11 +3,12 @@
 #include <vector>
 #include <limits>
 
-int main()
+int main(int argc, char** argv)
 {
     // *INPUT FILE*
+    const char* path = (argc >= 2) ? argv[1] : "input.txt";
 
-    std::ifstream input("input.txt");
+    std::ifstream input(path);
     if(input.fail())
     {
         std::cout << "Failed to open \"input.txt\"!" << std::endl;

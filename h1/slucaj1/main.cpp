@@ -38,12 +38,16 @@ std::pair<double, double> interval_intersection(const std::vector<std::vector<do
 
     for(unsigned p=0; p<m; p++)
     {
+        if(A.at(p).at(0) == 0)
+        {
+            if(b.at(p) > 0)
+                return std::make_pair(+INF, -INF);
+        }
         auto value = b.at(p)/A.at(p).at(0);
         if(A.at(p).at(0) < 0)
             right = std::min(right, value);
         else
-            left = std::max(left, value);
-        
+            left = std::max(left, value);        
     }
 
     if(right < left)
@@ -148,11 +152,12 @@ void transform(std::vector<std::vector<double> >& A, std::vector<double>& b, uns
     #endif
 }
 
-int main()
+int main(int argc, char** argv)
 {
     // *INPUT FILE*
+    const char* path = (argc >= 2) ? argv[1] : "input.txt";
 
-    std::ifstream input("input.txt");
+    std::ifstream input(path);
     if(input.fail())
     {
         std::cout << "Failed to open \"input.txt\"!" << std::endl;
@@ -187,11 +192,17 @@ int main()
     unsigned it = 1;
     while(true)
     {
+        std::pair<double, double> result{0, 0};
         if(n > 1)
-            eliminate(A, b);
+            result = eliminate(A, b);
         else
         {
-            interval_intersection(A, b);
+            result = interval_intersection(A, b);
+            break;
+        }
+        if(result.first > result.second)
+        {
+            std::cout << "There is no solution!" << std::endl;
             break;
         }
         std::cout << "input value: " << std::endl;
