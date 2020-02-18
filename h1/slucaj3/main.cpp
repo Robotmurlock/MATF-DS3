@@ -163,9 +163,9 @@ void replace_var_with_function(std::vector<std::vector<double> >& A, std::vector
     
     for(unsigned i=0; i<m; i++)
     {
-        A.at(i).at(0) *= (1.0/c.at(0));
         for(unsigned j=1; j<n; j++)
-            A.at(i).at(j) += (c.at(j)/c.at(0))*A.at(i).at(0);
+            A.at(i).at(j) -= (c.at(j)/c.at(0))*A.at(i).at(0);
+        A.at(i).at(0) *= (1.0/c.at(0));
     }
 }
 
