@@ -297,7 +297,7 @@ Matrix identity(unsigned size)
     return R;
 }
 
-void append(Matrix& A, Matrix& B)
+void append(Matrix& A, const Matrix& B)
 {
     if(A.m_height != B.m_height)
         throw std::invalid_argument("Matrices must have same height!");
@@ -309,4 +309,10 @@ void append(Matrix& A, Matrix& B)
         for(unsigned j=0; j<tmp.m_height; j++)
             A.m_elements.at(j).push_back(tmp.at(j,i));
     A.m_width += tmp.m_width;
+}
+
+void swap_columns(Matrix& A, unsigned i, unsigned j)
+{
+    for(unsigned k=0; k<A.height(); k++)
+        std::swap(A.at(k, i), A.at(k, j));
 }

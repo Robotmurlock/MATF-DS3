@@ -65,7 +65,8 @@ public:
     bool operator==(const Matrix& M) const;
     bool operator!=(const Matrix& M) const;
 
-    friend void append(Matrix& A, Matrix& B);
+    friend void append(Matrix& A, const Matrix& B);
+    friend void swap_columns(Matrix& A, unsigned i, unsigned j);
 };
 
 Matrix identity(unsigned size);
