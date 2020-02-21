@@ -5,7 +5,7 @@
 
 #define INF std::numeric_limits<double>::infinity()
 
-#define _DEBUG1
+#define _DEBUG
 
 template<typename T>
 void print_vector(const std::vector<T>& v)
