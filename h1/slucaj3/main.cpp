@@ -5,7 +5,7 @@
 
 #define INF std::numeric_limits<double>::infinity()
 
-#define _DEBUG
+#define _DEBUG1
 
 template<typename T>
 void print_vector(const std::vector<T>& v)
@@ -36,14 +36,29 @@ std::pair<double, double> interval_intersection(const std::vector<std::vector<do
     double left = -INF;
     double right = INF;
 
+    // interval_intersection is used when all variables except one are eliminated
+    // current system:
+    // c1*x1 > b1
+    // c2*x1 > b2
+    // ...
+    // cK*x1 > bK
+    // intersection of all inequalities returns interval
+
     for(unsigned p=0; p<m; p++)
     {
         if(A.at(p).at(0) == 0)
         {
+            // impossible inequality
             if(b.at(p) > 0)
                 return std::make_pair(+INF, -INF);
         }
         auto value = b.at(p)/A.at(p).at(0);
+        // Observe c*x1 > b:
+        // 1) if c < 0:
+        //      then x1 < b/c <=> x1 is in (-INF, b/c]
+        // 2) else
+        //      then x1 > b/c <=> x1 is in [b/c, +INF]
+
         if(A.at(p).at(0) < 0)
             right = std::min(right, value);
         else
@@ -51,6 +66,7 @@ std::pair<double, double> interval_intersection(const std::vector<std::vector<do
         
     }
 
+    // rigth < left <=> empty set
     if(right < left)
         std::cout << "There is no solution!" << std::endl;
     else
@@ -72,6 +88,7 @@ std::pair<double, double> interval_intersection(const std::vector<std::vector<do
     return std::make_pair(left, right);
 }
 
+// Furiev-Mozkin elimination algorithm:
 std::pair<double, double> eliminate(const std::vector<std::vector<double> >& A, const std::vector<double>& b)
 {
     auto m = A.size();
@@ -97,9 +114,11 @@ std::pair<double, double> eliminate(const std::vector<std::vector<double> >& A, 
         std::cout << "K: "; print_vector(K);
     #endif
 
+    // Elimination of element x(n-1) produces new system
     std::vector<std::vector<double> > new_A;
     std::vector<double> new_b;
 
+    // Inequalities from sets I and J are combined to eliminate one variable
     for(unsigned i=0; i<I.size(); i++)
         for(unsigned j=0; j<J.size(); j++)
         {
@@ -113,6 +132,7 @@ std::pair<double, double> eliminate(const std::vector<std::vector<double> >& A, 
             new_b.push_back(b.at(I.at(i))/A.at(I.at(i)).at(elim_index) - b.at(J.at(j))/A.at(J.at(j)).at(elim_index));
         }
 
+    // Inequalities from set K are just copied to new system (m is in K if A(m, n-1) = 0)
     for(unsigned k=0; k<K.size(); k++)
     {
         new_A.push_back(std::vector<double>{});

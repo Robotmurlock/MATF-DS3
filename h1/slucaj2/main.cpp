@@ -42,12 +42,12 @@ int main(int argc, char** argv)
             b.at(i) -= A.at(i).at(j)*X.at(j);
         if(b.at(i) > 0)
         {
-            std::cout << "Ne pripada" << std::endl;
+            std::cout << "Given point is not a solution!" << std::endl;
             return 0;
         }
     }
 
-    std::cout << "Pripada" << std::endl;
+    std::cout << "Given point is a solution!" << std::endl;
 
     return 0;
 }
