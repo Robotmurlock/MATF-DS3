@@ -11,4 +11,4 @@ matrix.o: lib/matrix.cpp lib/matrix.hpp
 .PHONY: clean
 
 clean:
-	rm $(PROGRAM)
+	rm $(PROGRAM) *.o
