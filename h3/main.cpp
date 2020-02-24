@@ -8,7 +8,7 @@
 #define STOP ((unsigned)-1)
 #define INF DBL_MAX
 
-#define _DEBUG
+#define _DEBUG1
 
 template<typename T>
 void vector_print(const std::vector<T>& v)
@@ -178,6 +178,19 @@ bool has_all_negative(const Matrix& y)
     return true;
 }
 
+void set_eta(Matrix& E, const Matrix& y, unsigned t_index, const std::vector<unsigned>& P)
+{
+    unsigned index;
+    for(unsigned i=0; i<P.size(); i++)
+        if(P.at(i) == t_index)
+        {
+            index = i;
+            break;
+        }
+    for(unsigned i=0; i<E.height(); i++)
+        E.at(i, index) = y.at(0, i);
+}
+
 int main(int argc, char** argv)
 {
     // *INPUT FILE*
@@ -268,11 +281,13 @@ int main(int argc, char** argv)
     // Algorithm starts here ...
     // Preprocess: Calculating x:
     auto x = get_x(c, b);
+    auto B = identity(P.size());
+    auto E = identity(P.size());
     while(true)
     {
         // Step1: Solve u*B = Cb <=> u = Cb*B' (B' is inverse matrix of B)
         // This is equivalent to u*K(i) = c(i) for i in P which is what we need to find optimal value
-        auto B = get_B(A, P);
+        B = B * E;
         auto Cb = get_Cb(c, P);
         auto u = Cb*B.inv();
 
@@ -311,6 +326,12 @@ int main(int argc, char** argv)
             return 0;
         }
         auto[t_opt, t_index] = get_t_opt(x, y, P);
+
+        //ETA MATRIX:
+        E = identity(B.height());
+        set_eta(E, y, t_index, P);
+        std::cout << "ETA:" << std::endl;
+        std::cout << E << std::endl;
 
         // Step5: With t_opt we can update our x:
         // x(i) = x_old(i) - t_opt*y(i), for i in P
