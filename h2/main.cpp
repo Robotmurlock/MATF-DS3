@@ -3,12 +3,16 @@
 #include <utility>
 #include <climits>
 #include <cfloat>
+#include <cmath>
 #include "lib/matrix.hpp"
 
 #define STOP ((unsigned)-1)
 #define INF DBL_MAX
 
 #define _DEBUG
+
+// precision: EPS
+#define EPS 0.0001
 
 template<typename T>
 void vector_print(const std::vector<T>& v)
@@ -18,14 +22,42 @@ void vector_print(const std::vector<T>& v)
     std::cout << std::endl;
 }
 
+bool is_not_canonical(const Matrix& A, const Matrix& b)
+{
+    // Checking if b > 0
+    for(unsigned i=0; i<b.width(); i++)
+        if(b.at(0, i) < 0)
+            return true;
+
+    // Checking if b has canonical base
+    // 1 0 ...   0 ...
+    // 0 1 0 ... 0 ...
+    // ...         ...
+    // 0 ...     1 ...
+
+    // fabs(A.at(i, j) - 1) > EPS instead of A.at(i, j) != 1 because of precision
+    // A.at(i, j) might be 0.99999999
+
+    for(unsigned i=0; i<A.height(); i++)
+        for(unsigned j=0; j<A.height(); j++)
+            if(i == j && std::fabs(A.at(i, j)-1) > EPS)
+                return true;
+            else if(i != j && std::fabs(A.at(i, j)) > EPS)
+                return true;
+
+    return false;
+}
+
 std::tuple<std::vector<unsigned>, std::vector<unsigned>, double> set_canonical_matrix(Matrix& A, Matrix& b, Matrix& c)
 {
     auto n = A.height();
     auto m = A.width();
     double Fo = 0.0;
     // i ~ column, j ~ row
-    // Iterate twice to fix b matrix if it has any negative values (temp fix)
-    for(unsigned w=0; w<2; w++)
+    while(is_not_canonical(A, b)) 
+    {
+        std::cout << A << std::endl;
+        std::cout << b << std::endl;
         for(unsigned i=0; i<n; i++)
         {
             if(A.at(i, i)*b.at(0, i) < 0)
@@ -59,6 +91,7 @@ std::tuple<std::vector<unsigned>, std::vector<unsigned>, double> set_canonical_m
                 c.at(0, k) -= coef*A.at(i, k);
             Fo -= coef*b.at(0, i);
         }
+    }
 
     std::vector<unsigned> P, Q;
     for(unsigned i=0; i<m; i++)
@@ -219,7 +252,7 @@ int main(int argc, char** argv)
         // if sign is > then transform it to <
         if(eq_sign == ">")
         {
-            for(unsigned j=0; j<m; j++) 
+            for(unsigned j=0; j<n; j++) 
                 in_A.at(i).at(j) *= -1;
             in_b.at(i) *= -1;
         }
