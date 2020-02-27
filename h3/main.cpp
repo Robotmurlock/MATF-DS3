@@ -65,6 +65,8 @@ std::tuple<std::vector<unsigned>, std::vector<unsigned>, double> set_canonical_m
         {
             if(A.at(i, i)*b.at(0, i) < 0)
             {
+                // If b(i) is negative then we have to pick different columns for base
+                // Finding all potential base columns:
                 std::vector<unsigned> potential_base_columns;
                 for(unsigned j=i+1; j<m; j++)
                     if(A.at(i, j)*b.at(0, i) > 0)
@@ -72,14 +74,16 @@ std::tuple<std::vector<unsigned>, std::vector<unsigned>, double> set_canonical_m
                         potential_base_columns.push_back(j);
                     }
 
+                // Picking random column and replacing it with current one in base:
                 unsigned new_column_index = rand() % potential_base_columns.size();
                 unsigned new_column = potential_base_columns.at(new_column_index);
                 swap_columns(A, i, new_column);
                 swap_columns(c, i, new_column);
                 break;
             }
-            // clearing i-th column
-
+            // "clearing" i-th column
+            // "clearing" - Transformation with result of i-th column having
+            // 0s above and below i-th row and 1 for i-th row
             for(unsigned j=0; j<n; j++)
             {
                 if(i == j)
@@ -97,6 +101,7 @@ std::tuple<std::vector<unsigned>, std::vector<unsigned>, double> set_canonical_m
             coef = c.at(0, i)/A.at(i, i);
             for(unsigned k=0; k<m; k++)
                 c.at(0, k) -= coef*A.at(i, k);
+
             Fo -= coef*b.at(0, i);
         }
     }
@@ -296,6 +301,11 @@ int main(int argc, char** argv)
     #endif
 
     // Rezidual Simplex:
+    // Rezidual Simplex:
+    // P ~ column indexes of base matrix B
+    // Q ~ other column indexes
+    // Fo ~ base value of F where F = Fo + c*x
+    // x ~ solution
     auto[P, Q, Fo] = set_canonical_matrix(A, b, c);
 
 
@@ -321,11 +331,15 @@ int main(int argc, char** argv)
 
     // Algorithm starts here ...
     // Preprocess: Calculating x:
+    // E ~ eta matrix
     auto x = get_x(c, b);
     auto B = identity(P.size());
     auto E = identity(P.size());
     while(true)
     {
+        // Cb ~ contains values from c where c(i) is in Cb if i is in P
+        // P = [1, 3, 4], C = [c1, c2, ... cN] => Cb = [c1, c3, c4]
+
         // Step1: Solve u*B = Cb <=> u = Cb*B' (B' is inverse matrix of B)
         // This is equivalent to u*K(i) = c(i) for i in P which is what we need to find optimal value
         B = B * E;
@@ -350,9 +364,13 @@ int main(int argc, char** argv)
             std::cout << "r: "  << std::endl << r << std::endl;
         #endif
 
+        // If r < 0 then there is no solution
         auto l_index = get_first_negative(r);
         if(l_index == STOP)
-            break;
+        {
+            std::cout << "There is no solution" << std::endl;
+            return 0;
+        }
         auto l = Q.at(l_index);
 
         // Step3: Solve B*y = Kl <=> y = B'Kl <=> y = B/Kl where r(l) < 0
