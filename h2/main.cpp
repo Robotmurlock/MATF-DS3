@@ -4,12 +4,13 @@
 #include <climits>
 #include <cfloat>
 #include <cmath>
+#include <ctime>
 #include "lib/matrix.hpp"
 
 #define STOP ((unsigned)-1)
 #define INF DBL_MAX
 
-#define _DEBUG
+#define _DEBUG1
 
 // precision: EPS
 #define EPS 0.0001
@@ -50,6 +51,8 @@ bool is_not_canonical(const Matrix& A, const Matrix& b)
 
 std::tuple<std::vector<unsigned>, std::vector<unsigned>, double> set_canonical_matrix(Matrix& A, Matrix& b, Matrix& c)
 {
+    srand(time(NULL));
+
     auto n = A.height();
     auto m = A.width();
     double Fo = 0.0;
@@ -62,13 +65,18 @@ std::tuple<std::vector<unsigned>, std::vector<unsigned>, double> set_canonical_m
         {
             if(A.at(i, i)*b.at(0, i) < 0)
             {
+                std::vector<unsigned> potential_base_columns;
                 for(unsigned j=i+1; j<m; j++)
                     if(A.at(i, j)*b.at(0, i) > 0)
                     {
-                        swap_columns(A, i, j);
-                        swap_columns(c, i, j);
-                        break;
+                        potential_base_columns.push_back(j);
                     }
+
+                unsigned new_column_index = rand() % potential_base_columns.size();
+                unsigned new_column = potential_base_columns.at(new_column_index);
+                swap_columns(A, i, new_column);
+                swap_columns(c, i, new_column);
+                break;
             }
             // clearing i-th column
 
