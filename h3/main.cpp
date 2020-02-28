@@ -159,16 +159,13 @@ unsigned get_first_negative(const Matrix& r)
     return STOP;
 }
 
-// Starting with x: if c(i) != 0 then we set next unused value of b for x(i) else x(i) = 0
-Matrix get_x(const Matrix& c, const Matrix& b)
+// Starting with x: if i in P then we set next unused value of b for x(i) else x(i) = 0
+Matrix get_x(const Matrix& b, const std::vector<unsigned>& P, unsigned size)
 {
     unsigned j = 0;
-    Matrix x = c;
-    for(unsigned i=0; i<c.width(); i++)
-        if(c.at(0, i) == 0)
-            x.at(0, i) = b.at(0, j++);
-        else
-            x.at(0, i) = 0;
+    Matrix x(1, size, 0);
+    for(auto p: P)
+        x.at(0, p) = b.at(0, j++);
 
     return x;
 }
@@ -242,7 +239,7 @@ std::pair<double, Matrix> residual_simplex(Matrix& A, Matrix& b, Matrix& c,
 {
     // Preprocess: Calculating x:
     // E ~ eta matrix
-    auto x = get_x(c, b);
+    auto x = get_x(b, P, c.width());
     auto B = identity(P.size());
     auto E = identity(P.size());
     while(true)
