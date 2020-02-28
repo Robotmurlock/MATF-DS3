@@ -237,6 +237,95 @@ void set_eta(Matrix& E, const Matrix& y, unsigned t_index, const std::vector<uns
         E.at(i, index) = y.at(0, i);
 }
 
+std::pair<double, Matrix> residual_simplex(Matrix& A, Matrix& b, Matrix& c,
+                                           std::vector<unsigned>& P, std::vector<unsigned>& Q, double Fo)
+{
+    // Preprocess: Calculating x:
+    // E ~ eta matrix
+    auto x = get_x(c, b);
+    auto B = identity(P.size());
+    auto E = identity(P.size());
+    while(true)
+    {
+        // Cb ~ contains values from c where c(i) is in Cb if i is in P
+        // P = [1, 3, 4], C = [c1, c2, ... cN] => Cb = [c1, c3, c4]
+
+        // Step1: Solve u*B = Cb <=> u = Cb*B' (B' is inverse matrix of B)
+        // This is equivalent to u*K(i) = c(i) for i in P which is what we need to find optimal value
+        B = B * E;
+        auto Cb = get_Cb(c, P);
+        auto u = Cb*B.inv();
+
+        // Step2: Calculating r
+        // r(j) = c(j) - u*K(j)
+        // if (r >= 0) then we found our optimal value
+        // This is equivalent to (l_index == STOP) which we get from get_first_negative(r)   
+        auto Kq = get_Kq(A, Q);
+        auto Cq = get_Cq(c, Q);
+        auto r = Cq - u*Kq;
+
+        #ifdef _DEBUG
+            std::cout << "x: "  << std::endl << x << std::endl;
+            std::cout << "B: "  << std::endl << B << std::endl;
+            std::cout << "Cb: " << std::endl << Cb << std::endl;
+            std::cout << "u: "  << std::endl << u << std::endl;
+            std::cout << "Kq: " << std::endl << Kq << std::endl;
+            std::cout << "Cq: " << std::endl << Cq << std::endl;
+            std::cout << "r: "  << std::endl << r << std::endl;
+        #endif
+
+        // If r < 0 then there is no solution
+        auto l_index = get_first_negative(r);
+        if(l_index == STOP)
+            break;
+        auto l = Q.at(l_index);
+
+        // Step3: Solve B*y = Kl <=> y = B'Kl <=> y = B/Kl where r(l) < 0
+        auto Kl = A.col(l);
+        auto y = (B/Kl).transpose();
+
+        // Step4: If y has all negative values, then there is no optimum value (its not bounded)
+        // Otherwise we get t_opt := min{x(i)/y(i) | y(i) > 0}
+        if(has_all_negative(y))
+        {
+            std::cout << "Function does not reach optimal value!" << std::endl;
+            return std::make_pair(0, Matrix());
+        }
+        auto[t_opt, t_index] = get_t_opt(x, y, P);
+
+        //ETA MATRIX:
+        E = identity(B.height());
+        set_eta(E, y, t_index, P);
+        std::cout << "ETA:" << std::endl;
+        std::cout << E << std::endl;
+
+        // Step5: With t_opt we can update our x:
+        // x(i) = x_old(i) - t_opt*y(i), for i in P
+        // x(i) = t_opt, for i == l
+        // x(i) = 0, otherwise
+        // We replace t_index in P with l and l in Q with t_index (new base P)
+        update_x(x, y, l, P, t_opt);
+        update_P_Q(P, Q, t_index, l);
+
+        #ifdef _DEBUG
+            std::cout << "l: " << l_index << std::endl;
+            std::cout << "Kl:" << std::endl << Kl << std::endl;
+            std::cout << "y: " << std::endl << y << std::endl;
+            std::cout << "t_opt: " << t_opt << std::endl;
+            std::cout << "t_index: " << t_index << std::endl;
+            std::cout << "new_x: " << x << std::endl;
+            std::cout << "new_P: ";
+            vector_print(P);
+            std::cout << "new_Q: ";
+            vector_print(Q);
+        #endif
+    }
+
+    // c*(x.transpose()) is matrix with dimension 1x1
+    double F = -Fo + (c*(x.transpose())).at(0, 0);
+    return std::make_pair(F, x);
+}
+
 int main(int argc, char** argv)
 {
     // *INPUT FILE*
@@ -329,93 +418,14 @@ int main(int argc, char** argv)
         std::cout << std::endl;
     #endif
 
-    // Algorithm starts here ...
-    // Preprocess: Calculating x:
-    // E ~ eta matrix
-    auto x = get_x(c, b);
-    auto B = identity(P.size());
-    auto E = identity(P.size());
-    while(true)
-    {
-        // Cb ~ contains values from c where c(i) is in Cb if i is in P
-        // P = [1, 3, 4], C = [c1, c2, ... cN] => Cb = [c1, c3, c4]
+    auto[F, x] = residual_simplex(A, b, c, P, Q, Fo);
 
-        // Step1: Solve u*B = Cb <=> u = Cb*B' (B' is inverse matrix of B)
-        // This is equivalent to u*K(i) = c(i) for i in P which is what we need to find optimal value
-        B = B * E;
-        auto Cb = get_Cb(c, P);
-        auto u = Cb*B.inv();
-
-        // Step2: Calculating r
-        // r(j) = c(j) - u*K(j)
-        // if (r >= 0) then we found our optimal value
-        // This is equivalent to (l_index == STOP) which we get from get_first_negative(r)   
-        auto Kq = get_Kq(A, Q);
-        auto Cq = get_Cq(c, Q);
-        auto r = Cq - u*Kq;
-
-        #ifdef _DEBUG
-            std::cout << "x: "  << std::endl << x << std::endl;
-            std::cout << "B: "  << std::endl << B << std::endl;
-            std::cout << "Cb: " << std::endl << Cb << std::endl;
-            std::cout << "u: "  << std::endl << u << std::endl;
-            std::cout << "Kq: " << std::endl << Kq << std::endl;
-            std::cout << "Cq: " << std::endl << Cq << std::endl;
-            std::cout << "r: "  << std::endl << r << std::endl;
-        #endif
-
-        // If r < 0 then there is no solution
-        auto l_index = get_first_negative(r);
-        if(l_index == STOP)
-        {
-            std::cout << "There is no solution" << std::endl;
-            return 0;
-        }
-        auto l = Q.at(l_index);
-
-        // Step3: Solve B*y = Kl <=> y = B'Kl <=> y = B/Kl where r(l) < 0
-        auto Kl = A.col(l);
-        auto y = (B/Kl).transpose();
-
-        // Step4: If y has all negative values, then there is no optimum value (its not bounded)
-        // Otherwise we get t_opt := min{x(i)/y(i) | y(i) > 0}
-        if(has_all_negative(y))
-        {
-            std::cout << "Function does not reach optimal value!" << std::endl;
-            return 0;
-        }
-        auto[t_opt, t_index] = get_t_opt(x, y, P);
-
-        //ETA MATRIX:
-        E = identity(B.height());
-        set_eta(E, y, t_index, P);
-        std::cout << "ETA:" << std::endl;
-        std::cout << E << std::endl;
-
-        // Step5: With t_opt we can update our x:
-        // x(i) = x_old(i) - t_opt*y(i), for i in P
-        // x(i) = t_opt, for i == l
-        // x(i) = 0, otherwise
-        // We replace t_index in P with l and l in Q with t_index (new base P)
-        update_x(x, y, l, P, t_opt);
-        update_P_Q(P, Q, t_index, l);
-
-        #ifdef _DEBUG
-            std::cout << "l: " << l_index << std::endl;
-            std::cout << "Kl:" << std::endl << Kl << std::endl;
-            std::cout << "y: " << std::endl << y << std::endl;
-            std::cout << "t_opt: " << t_opt << std::endl;
-            std::cout << "t_index: " << t_index << std::endl;
-            std::cout << "new_x: " << x << std::endl;
-            std::cout << "new_P: ";
-            vector_print(P);
-            std::cout << "new_Q: ";
-            vector_print(Q);
-        #endif
-    }
+    // if x.height() == 0 and x.width() == 0 then there is no solution (special case value)
+    if(x.height() == 0 && x.width() == 0)
+        return 0;
 
     std::cout << "Solution: " << x;
-    std::cout << "Optimal value: " << -Fo + c*(x.transpose());
+    std::cout << "Optimal value: " << F << std::endl;
 
     return 0;
 }
