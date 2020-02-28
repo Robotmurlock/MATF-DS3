@@ -289,6 +289,40 @@ bool Matrix::operator!=(const Matrix& M) const
     return !(*this == M);
 }
 
+Matrix Matrix::remove_column(unsigned index)
+{
+    if(index >= m_width)
+        throw std::invalid_argument("Column index ouf of range!");
+    
+    std::vector<std::vector<double> > mat(m_height, std::vector<double>(m_width-1));
+    for(unsigned i=0; i<m_height; i++)
+        for(unsigned j=0; j<m_width; j++)
+        {
+            if(j == index)
+                continue;
+            int k = (j > index) ? 1 : 0;
+            mat.at(i).at(j-k) = m_elements.at(i).at(j);
+        }
+    return Matrix(mat);
+}
+
+Matrix Matrix::remove_row(unsigned index)
+{
+    if(index >= m_height)
+        throw std::invalid_argument("Row index ouf of range!");
+    
+    std::vector<std::vector<double> > mat(m_height-1, std::vector<double>(m_width));
+    for(unsigned i=0; i<m_height; i++)
+        for(unsigned j=0; j<m_width; j++)
+        {
+            if(i == index)
+                continue;
+            int k = (i > index) ? 1 : 0;
+            mat.at(i-k).at(j) = m_elements.at(i).at(j);
+        }
+    return Matrix(mat);
+}
+
 Matrix identity(unsigned size)
 {
     Matrix R(size);

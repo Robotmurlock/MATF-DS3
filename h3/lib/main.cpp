@@ -89,5 +89,9 @@ int main()
     append(A, D);
     std::cout << A << std::endl;
 
+    std::cout << "Removing column" << std::endl;
+    std::cout << C.remove_column(1) << std::endl;
+    std::cout << C.remove_row(1) << std::endl;
+
     return 0;
 }
