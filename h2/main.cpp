@@ -6,7 +6,7 @@
 #include <cmath>
 #include <ctime>
 #include <iomanip>
-#include "lib/matrix.hpp"
+#include "../lib/matrix.hpp"
 
 #define STOP ((unsigned)-1)
 #define INF DBL_MAX
