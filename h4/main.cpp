@@ -14,6 +14,7 @@
 #define INF DBL_MAX
 
 #define _DEBUG
+#define BAR "------------------------------------------------------"
 
 // precision: EPS
 #define EPS 0.0001
@@ -229,16 +230,26 @@ std::pair<double, Matrix> residual_simplex(Matrix& A, Matrix& b, Matrix& c,
 
     // Preprocess: Calculating x:
     auto x = get_x(b, P, c.width());
+    std::cout << "Starting x value: " << x << std::endl;
+    unsigned iteration = 0;
     while(true)
     {
+        std::cout << BAR << std::endl;
+        std::cout << "ITERATION " << iteration++ << ":" << std::endl;
         // Cb ~ contains values from c where c(i) is in Cb if i is in P
         // P = [1, 3, 4], C = [c1, c2, ... cN] => Cb = [c1, c3, c4]
 
         // Step1: Solve u*B = Cb <=> u = Cb*B' (B' is inverse matrix of B)
         // This is equivalent to u*K(i) = c(i) for i in P which is what we need to find optimal value
+
         auto B = get_B(A, P);
         auto Cb = get_Cb(c, P);
         auto u = Cb*B.inv();
+        std::cout << "Step1: Solving system(1): uB = Cb" << std::endl;
+        std::cout << "B:" << std::endl;
+        std::cout << B << std::endl;
+        std::cout << "Cb: " << Cb << std::endl;
+        std::cout << "Result of u(1):" << u << std::endl;
 
         // Step2: Calculating r
         // r(j) = c(j) - u*K(j)
@@ -247,61 +258,72 @@ std::pair<double, Matrix> residual_simplex(Matrix& A, Matrix& b, Matrix& c,
         auto Kq = get_Kq(A, Q);
         auto Cq = get_Cq(c, Q);
         auto r = Cq - u*Kq;
+        // K := Kq in output
+        // C := Cq in output
+        std::cout << "Step2: Calculating r (r := C - uK):" << std::endl;
+        std::cout << "C: " << Cq << std::endl;
+        std::cout << "K: " << std::endl;
+        std::cout << Kq << std::endl; 
+        std::cout << "Result(r): " << r << std::endl;
 
-        #ifdef _DEBUG
-            std::cout << "x: "  << std::endl << x << std::endl;
-            std::cout << "B: "  << std::endl << B << std::endl;
-            std::cout << "Cb: " << std::endl << Cb << std::endl;
-            std::cout << "u: "  << std::endl << u << std::endl;
-            std::cout << "Kq: " << std::endl << Kq << std::endl;
-            std::cout << "Cq: " << std::endl << Cq << std::endl;
-            std::cout << "r: "  << std::endl << r << std::endl;
-        #endif
-
-        // If r < 0 then there is no solution
+        // If r > 0 then optimal value is found
         auto l_index = get_first_negative(r);
         if(l_index == STOP)
+        {
+            std::cout << "(r > 0) is true => optimal value is found!" << std::endl;
             break;
+        }
         auto l = Q.at(l_index);
+        std::cout << "Bland's rule: first negative r(i) is r" << l << "!" << std::endl;
 
         // Step3: Solve B*y = Kl <=> y = B'Kl <=> y = B/Kl where r(l) < 0
         auto Kl = A.col(l);
         auto y = (B/Kl).transpose();
+        std::cout << "Step3: Solving system(2): By = K" << l_index << std::endl;
+        std::cout << "B:" << std::endl;
+        std::cout << B << std::endl;
+        std::cout << "K" << l << ": " << std::endl << Kl << std::endl;
+        std::cout << "Result of y(2):" << y << std::endl;
 
         // Step4: If y has all negative values, then there is no optimum value (its not bounded)
         // Otherwise we get t_opt := min{x(i)/y(i) | y(i) > 0}
+        std::cout << "Step4: check if y <= 0:" << std::endl;
         if(has_all_negative(y))
         {
-            std::cout << "Function does not reach optimal value!" << std::endl;
+            std::cout << "Function does not reach optimal value because (y <= 0) is true!" << std::endl;
             return std::make_pair(0, Matrix());
         }
+        std::cout << "(y <= 0) is not true!" << std::endl;
+        std::cout << "Finding optimal t:" << std::endl;
         auto[t_opt, t_index] = get_t_opt(x, y, P);
+        std::cout << "Optimal t: " << t_opt << std::endl;
+        std::cout << "Column " << t_index << " leaves base (P)" << std::endl;
+
 
         // Step5: With t_opt we can update our x:
         // x(i) = x_old(i) - t_opt*y(i), for i in P
         // x(i) = t_opt, for i == l
         // x(i) = 0, otherwise
         // We replace t_index in P with l and l in Q with t_index (new base P)
+        std::cout << "Step5: updating x:" << std::endl;
+        std::cout << "Old x: " << x;
         update_x(x, y, l, P, t_opt);
         update_P_Q(P, Q, t_index, l);
-
-        #ifdef _DEBUG
-            std::cout << "l: " << l_index << std::endl;
-            std::cout << "Kl:" << std::endl << Kl << std::endl;
-            std::cout << "y: " << std::endl << y << std::endl;
-            std::cout << "t_opt: " << t_opt << std::endl;
-            std::cout << "t_index: " << t_index << std::endl;
-            std::cout << "new_x: " << x << std::endl;
-            std::cout << "new_P: ";
-            vector_print(P);
-            std::cout << "new_Q: ";
-            vector_print(Q);
-        #endif
+        std::cout << "New x: " << x << std::endl;
     }
+    std::cout << BAR << std::endl;
 
     // c*(x.transpose()) is matrix with dimension 1x1
     double F = -Fo + (c*(x.transpose())).at(0, 0);
     return std::make_pair(F, x);
+}
+
+void show_system(const Matrix& A, const Matrix& b, const Matrix& c)
+{
+    std::cout << "c: " << c << std::endl;
+    std::cout << "A:" << std::endl;
+    std::cout << A << std::endl;
+    std::cout << "b: " << b << std::endl << std::endl;
 }
 
 int main(int argc, char** argv)
