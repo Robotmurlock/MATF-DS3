@@ -6,6 +6,7 @@
 #include <cmath>
 #include <ctime>
 #include <set>
+#include <iomanip>
 #include "lib/matrix.hpp"
 
 #define UNUSED_VAR(X) ((void)X)
@@ -328,6 +329,8 @@ void show_system(const Matrix& A, const Matrix& b, const Matrix& c)
 
 int main(int argc, char** argv)
 {
+    std::cout << std::fixed;
+    std::cout << std::setprecision(2);
     // *INPUT FILE*
     const char* path = (argc >= 2) ? argv[1] : "input.txt";
 
