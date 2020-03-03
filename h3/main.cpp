@@ -249,14 +249,14 @@ std::pair<double, Matrix> residual_simplex(Matrix& A, Matrix& b, Matrix& c,
     while(true)
     {
         std::cout << BAR << std::endl;
-        std::cout << "ITERATION " << iteration << ":" << std::endl;
+        std::cout << "ITERATION " << iteration++ << ":" << std::endl;
         // Cb ~ contains values from c where c(i) is in Cb if i is in P
         // P = [1, 3, 4], C = [c1, c2, ... cN] => Cb = [c1, c3, c4]
 
         // Step1: Solve u*B = Cb <=> u = Cb*B' (B' is inverse matrix of B)
         // This is equivalent to u*K(i) = c(i) for i in P which is what we need to find optimal value
         std::cout << "Calculating B:" << std::endl;
-        std::cout << "B = Bo*";
+        std::cout << "B = Bo";
         for(unsigned p=1; p<=iteration; p++)
             std::cout << "*E" << p;
         std::cout << std::endl;
@@ -268,7 +268,7 @@ std::pair<double, Matrix> residual_simplex(Matrix& A, Matrix& b, Matrix& c,
         std::cout << "B:" << std::endl;
         std::cout << B << std::endl;
         std::cout << "Cb: " << Cb << std::endl;
-        std::cout << "Result of u(1):" << u << std::endl;
+        std::cout << "Result of u(1): " << u << std::endl;
 
         // Step2: Calculating r
         // r(j) = c(j) - u*K(j)
