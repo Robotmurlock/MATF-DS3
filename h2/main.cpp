@@ -269,7 +269,7 @@ std::pair<double, Matrix> residual_simplex(Matrix& A, Matrix& b, Matrix& c,
             break;
         }
         auto l = Q.at(l_index);
-        std::cout << "Bland's rule: first negative r(i) is r" << l << "!" << std::endl;
+        std::cout << "Bland's rule: first negative r(i) is r" << l_index << "!" << std::endl;
 
         // Step3: Solve B*y = Kl <=> y = B'Kl <=> y = B/Kl where r(l) < 0
         auto Kl = A.col(l);

@@ -293,7 +293,7 @@ std::pair<double, Matrix> residual_simplex(Matrix& A, Matrix& b, Matrix& c,
             break;
         }
         auto l = Q.at(l_index);
-        std::cout << "Bland's rule: first negative r(i) is r" << l << "!" << std::endl;
+        std::cout << "Bland's rule: first negative r(i) is r" << l_index << "!" << std::endl;
 
         // Step3: Solve B*y = Kl <=> y = B'Kl <=> y = B/Kl where r(l) < 0
         auto Kl = A.col(l);
@@ -302,7 +302,7 @@ std::pair<double, Matrix> residual_simplex(Matrix& A, Matrix& b, Matrix& c,
         std::cout << "B:" << std::endl;
         std::cout << B << std::endl;
         std::cout << "K" << l << ": " << std::endl << Kl << std::endl;
-        std::cout << "Result of y(2):" << y << std::endl;
+        std::cout << "Result of y(2): " << y << std::endl;
 
         // Step4: If y has all negative values, then there is no optimum value (its not bounded)
         // Otherwise we get t_opt := min{x(i)/y(i) | y(i) > 0}
