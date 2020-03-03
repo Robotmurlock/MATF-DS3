@@ -1,234 +1,139 @@
+------------------------------------------------------
+1.00 3.00 1.00 0.00 0.00 
+5.00 8.00 0.00 1.00 0.00 
+-1.00 -5.00 0.00 0.00 1.00 
+
+------------------------------------------------------
 A1:
-1 0 1 0 1 1 
-0 1 0 1 -1 2 
+1.00 0.00 0.00 1.00 3.00 1.00 0.00 0.00 
+0.00 1.00 0.00 5.00 8.00 0.00 1.00 0.00 
+0.00 0.00 1.00 -1.00 -5.00 0.00 0.00 1.00 
 
 c1:
-1 1 0 0 0 0 
+1.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 
 
 b:
-6 8 
+1.00 55.00 3.00 
 
-Starting x value: 6 8 0 0 0 0 
+Starting x value: 1.00 55.00 3.00 0.00 0.00 0.00 0.00 0.00 
 
 ------------------------------------------------------
 ITERATION 0:
 Step1: Solving system(1): uB = Cb
 B:
-1 0 
-0 1 
+1.00 0.00 0.00 
+0.00 1.00 0.00 
+0.00 0.00 1.00 
 
-Cb: 1 1 
+Cb: 1.00 0.00 0.00 
 
-Result of u(1):1 1 
+Result of u(1):1.00 0.00 0.00 
 
 Step2: Calculating r (r := C - uK):
-C: 0 0 0 0 
+C: 0.00 0.00 0.00 0.00 0.00 
 
 K: 
-1 0 1 1 
-0 1 -1 2 
+1.00 3.00 1.00 0.00 0.00 
+5.00 8.00 0.00 1.00 0.00 
+-1.00 -5.00 0.00 0.00 1.00 
 
-Result(r): -1 -1 0 -3 
+Result(r): -1.00 -3.00 -1.00 0.00 0.00 
 
-Bland's rule: first negative r(i) is r2!
+Bland's rule: first negative r(i) is r3!
 Step3: Solving system(2): By = K0
 B:
-1 0 
-0 1 
+1.00 0.00 0.00 
+0.00 1.00 0.00 
+0.00 0.00 1.00 
 
-K2: 
-1 
-0 
+K3: 
+1.00 
+5.00 
+-1.00 
 
-Result of y(2):1 0 
+Result of y(2):1.00 5.00 -1.00 
 
 Step4: check if y <= 0:
 (y <= 0) is not true!
 Finding optimal t:
-Optimal t: 6
+Optimal t: 1.00
 Column 0 leaves base (P)
 Step5: updating x:
-Old x: 6 8 0 0 0 0 
-New x: 0 8 6 0 0 0 
+Old x: 1.00 55.00 3.00 0.00 0.00 0.00 0.00 0.00 
+New x: 0.00 50.00 4.00 1.00 0.00 0.00 0.00 0.00 
 
 ------------------------------------------------------
 ITERATION 1:
 Step1: Solving system(1): uB = Cb
 B:
-1 0 
-0 1 
+1.00 0.00 0.00 
+5.00 1.00 0.00 
+-1.00 0.00 1.00 
 
-Cb: 0 1 
+Cb: 0.00 0.00 0.00 
 
-Result of u(1):0 1 
-
-Step2: Calculating r (r := C - uK):
-C: 1 0 0 0 
-
-K: 
-1 0 1 1 
-0 1 -1 2 
-
-Result(r): 1 -1 1 -2 
-
-Bland's rule: first negative r(i) is r3!
-Step3: Solving system(2): By = K1
-B:
-1 0 
-0 1 
-
-K3: 
-0 
-1 
-
-Result of y(2):0 1 
-
-Step4: check if y <= 0:
-(y <= 0) is not true!
-Finding optimal t:
-Optimal t: 8
-Column 1 leaves base (P)
-Step5: updating x:
-Old x: 0 8 6 0 0 0 
-New x: 0 0 6 8 0 0 
-
-------------------------------------------------------
-ITERATION 2:
-Step1: Solving system(1): uB = Cb
-B:
-1 0 
-0 1 
-
-Cb: 0 0 
-
-Result of u(1):0 0 
+Result of u(1):0.00 0.00 0.00 
 
 Step2: Calculating r (r := C - uK):
-C: 1 1 0 0 
+C: 1.00 0.00 0.00 0.00 0.00 
 
 K: 
-1 0 1 1 
-0 1 -1 2 
+1.00 3.00 1.00 0.00 0.00 
+0.00 8.00 0.00 1.00 0.00 
+0.00 -5.00 0.00 0.00 1.00 
 
-Result(r): 1 1 0 0 
+Result(r): 1.00 0.00 0.00 0.00 0.00 
 
 (r > 0) is true => optimal value is found!
 ------------------------------------------------------
 pseudo indexes:
 
 new system:
-1 0 1 1 
-0 1 -1 2 
+1.00 3.00 1.00 0.00 0.00 
+5.00 8.00 0.00 1.00 0.00 
+-1.00 -5.00 0.00 0.00 1.00 
 
-6 8 
+1.00 55.00 3.00 
 
-0 0 -1 -3 
+-4.00 -1.00 -5.00 -3.00 0.00 0.00 0.00 
 
-Starting x value: 6 8 0 0 
+1.00 3.00 1.00 0.00 0.00 
+5.00 8.00 0.00 1.00 0.00 
+-1.00 -5.00 0.00 0.00 1.00 
+
+1.00 55.00 3.00 
+
+1.00 0.00 0.00 5.00 -1.00 
+0.00 1.00 0.00 -17.00 5.00 
+0.00 0.00 1.00 -2.00 1.00 
+
+-3.00 70.00 4.00 
+
+Starting x value: 3.00 55.00 1.00 0.00 0.00 0.00 0.00 
 
 ------------------------------------------------------
 ITERATION 0:
 Step1: Solving system(1): uB = Cb
 B:
-1 0 
-0 1 
+1.00 0.00 0.00 
+0.00 1.00 0.00 
+0.00 0.00 1.00 
 
-Cb: 0 0 
+Cb: 0.00 0.00 0.00 
 
-Result of u(1):0 0 
-
-Step2: Calculating r (r := C - uK):
-C: -1 -3 
-
-K: 
-1 1 
--1 2 
-
-Result(r): -1 -3 
-
-Bland's rule: first negative r(i) is r2!
-Step3: Solving system(2): By = K0
-B:
-1 0 
-0 1 
-
-K2: 
-1 
--1 
-
-Result of y(2):1 -1 
-
-Step4: check if y <= 0:
-(y <= 0) is not true!
-Finding optimal t:
-Optimal t: 6
-Column 0 leaves base (P)
-Step5: updating x:
-Old x: 6 8 0 0 
-New x: 0 14 6 0 
-
-------------------------------------------------------
-ITERATION 1:
-Step1: Solving system(1): uB = Cb
-B:
-1 0 
--1 1 
-
-Cb: -1 0 
-
-Result of u(1):-1 0 
+Result of u(1):0.00 0.00 0.00 
 
 Step2: Calculating r (r := C - uK):
-C: 0 -3 
+C: 38.00 16.00 
 
 K: 
-1 1 
-0 2 
+-5.00 -1.00 
+8.00 5.00 
+3.00 1.00 
 
-Result(r): 1 -2 
-
-Bland's rule: first negative r(i) is r3!
-Step3: Solving system(2): By = K1
-B:
-1 0 
--1 1 
-
-K3: 
-1 
-2 
-
-Result of y(2):1 3 
-
-Step4: check if y <= 0:
-(y <= 0) is not true!
-Finding optimal t:
-Optimal t: 4.66667
-Column 1 leaves base (P)
-Step5: updating x:
-Old x: 0 14 6 0 
-New x: 0 0 1.33333 4.66667 
-
-------------------------------------------------------
-ITERATION 2:
-Step1: Solving system(1): uB = Cb
-B:
-1 1 
--1 2 
-
-Cb: -1 -3 
-
-Result of u(1):-1.66667 -0.666667 
-
-Step2: Calculating r (r := C - uK):
-C: 0 0 
-
-K: 
-1 0 
-0 1 
-
-Result(r): 1.66667 0.666667 
+Result(r): 38.00 16.00 
 
 (r > 0) is true => optimal value is found!
 ------------------------------------------------------
-Solution: 0 0 1.33333 4.66667 
-Optimal value: -15.3333
+Solution: 3.00 55.00 1.00 0.00 0.00 0.00 0.00 
+Optimal value: -170.00

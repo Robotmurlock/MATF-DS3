@@ -402,13 +402,45 @@ int main(int argc, char** argv)
     // Ew + Ax = b
     // w, x >= 0
     // System Ax = b has solution only if subgoal system has solution equal to zero
+    std::set<unsigned> unit_columns;
+
     Matrix A1 = identity(A.height());
     append(A1, A);
 
     Matrix c1(1, A1.width());
-    for(unsigned i=0; i<A1.height(); i++)
+    for(unsigned i=0; i<A1.height() - unit_columns.size(); i++)
         c1.at(0, i) = 1;
 
+    /*for(int i=A1.width()-1; i>=0; i--)
+    {
+        bool is_unit_column = true;
+        unsigned ones_cnt = 0u;
+        unsigned one_index;
+        for(unsigned j=0; j<A1.height(); j++)
+        {
+            if(std::fabs(A1.at(j, i)) < EPS)
+                continue;
+            if(std::fabs(A1.at(j, i)-1) < EPS)
+            {
+                ones_cnt++;
+                one_index = j;
+                continue;
+            }
+            
+            is_unit_column = false;
+            break;
+        }
+        if(std::fabs(c1.at(0, i)) > EPS)
+            is_unit_column = false;
+        if(ones_cnt != 1)
+            is_unit_column = false;
+        if(is_unit_column && unit_columns.find(one_index) == unit_columns.end())
+        {
+            A1 = A1.remove_column(i);
+            c1 = c1.remove_column(i);
+            unit_columns.insert(one_index);
+        }
+    }*/
     #ifdef _DEBUG
         std::cout << "A1:" << std::endl << A1 << std::endl;
         std::cout << "c1:" << std::endl << c1 << std::endl;
