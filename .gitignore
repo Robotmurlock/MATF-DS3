@@ -33,4 +33,4 @@
 
 #custom
 program
-log.txt
+*.txt
