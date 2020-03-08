@@ -1,34 +1,37 @@
 Solving system(canonical form): Ax = b
-c: 2.00 3.00 5.00 2.00 3.00 0.00 0.00 
+c: -4.00 -1.00 -5.00 -3.00 0.00 0.00 0.00 
 
 A:
--1.00 -1.00 -2.00 -1.00 -3.00 1.00 0.00 
--2.00 2.00 -3.00 -1.00 -1.00 0.00 1.00 
+1.00 -1.00 -1.00 3.00 1.00 0.00 0.00 
+5.00 1.00 3.00 8.00 0.00 1.00 0.00 
+-1.00 2.00 3.00 -5.00 0.00 0.00 1.00 
 
-b: -4.00 -3.00 
+b: 1.00 55.00 3.00 
 
 
 ------------------------------------------------------
 set_unit_matrix:
-c: 0.00 0.00 0.75 -0.25 -4.25 2.50 -0.25 
+c: 0.00 0.00 0.00 -1.00 9.00 1.00 5.00 
 
 A:
-1.00 0.00 1.75 0.75 1.75 -0.50 -0.25 
-0.00 1.00 0.25 0.25 1.25 -0.50 0.25 
+1.00 0.00 0.00 1.00 2.00 1.00 1.00 
+0.00 1.00 0.00 -2.00 1.00 2.00 1.00 
+-0.00 -0.00 1.00 5.00 -11.00 -4.00 -6.00 
 
-b: 2.75 1.25 
+b: 5.00 4.00 26.00 
 
 
-Base indexes(P): 0 1 
-Nonbase indexes(Q): 2 3 4 5 6 
-Base function value(Fo): -9.25
+Base indexes(P): 0 1 2 
+Nonbase indexes(Q): 3 4 5 6 
+Base function value(Fo): 24.00
 ------------------------------------------------------
 Residual simplex: 
-Starting x value: 2.75 1.25 0.00 0.00 0.00 0.00 0.00 
+Starting x value: 5.00 4.00 26.00 0.00 0.00 0.00 0.00 
 
 Starting Base matrix: 
-1.00 0.00 
-0.00 1.00 
+1.00 0.00 0.00 
+0.00 1.00 0.00 
+0.00 0.00 1.00 
 
 ------------------------------------------------------
 ITERATION 0:
@@ -36,47 +39,52 @@ Calculating B:
 B = Bo*E1
 Step1: Solving system(1): uB = Cb
 B:
-1.00 0.00 
-0.00 1.00 
+1.00 0.00 0.00 
+0.00 1.00 0.00 
+0.00 0.00 1.00 
 
-Cb: 0.00 0.00 
+Cb: 0.00 0.00 0.00 
 
-Result of u(1): 0.00 0.00 
+Result of u(1): 0.00 0.00 0.00 
 
 Step2: Calculating r (r := C - uK):
-C: 0.75 -0.25 -4.25 2.50 -0.25 
+C: -1.00 9.00 1.00 5.00 
 
 K: 
-1.75 0.75 1.75 -0.50 -0.25 
-0.25 0.25 1.25 -0.50 0.25 
+1.00 2.00 1.00 1.00 
+-2.00 1.00 2.00 1.00 
+5.00 -11.00 -4.00 -6.00 
 
-Result(r): 0.75 -0.25 -4.25 2.50 -0.25 
+Result(r): -1.00 9.00 1.00 5.00 
 
-Bland's rule: first negative r(i) is r3!
-Step3: Solving system(2): By = K1
+Bland's rule: first negative r(i) is r0!
+Step3: Solving system(2): By = K0
 B:
-1.00 0.00 
-0.00 1.00 
+1.00 0.00 0.00 
+0.00 1.00 0.00 
+0.00 0.00 1.00 
 
 K3: 
-0.75 
-0.25 
+1.00 
+-2.00 
+5.00 
 
-Result of y(2):0.75 0.25 
+Result of y(2): 1.00 -2.00 5.00 
 
 Step4: check if y <= 0:
 (y <= 0) is not true!
 Finding optimal t:
-Optimal t: 3.67
+Optimal t: 5.00
 Column 0 leaves base (P)
 
 ETA matrix:
-0.75 0.00 
-0.25 1.00 
+1.00 0.00 0.00 
+-2.00 1.00 0.00 
+5.00 0.00 1.00 
 
 Step5: updating x:
-Old x: 2.75 1.25 0.00 0.00 0.00 0.00 0.00 
-New x: 0.00 0.33 0.00 3.67 0.00 0.00 0.00 
+Old x: 5.00 4.00 26.00 0.00 0.00 0.00 0.00 
+New x: 0.00 14.00 1.00 5.00 0.00 0.00 0.00 
 
 ------------------------------------------------------
 ITERATION 1:
@@ -84,167 +92,25 @@ Calculating B:
 B = Bo*E1*E2
 Step1: Solving system(1): uB = Cb
 B:
-0.75 0.00 
-0.25 1.00 
+1.00 0.00 0.00 
+-2.00 1.00 0.00 
+5.00 0.00 1.00 
 
-Cb: -0.25 0.00 
+Cb: -1.00 0.00 0.00 
 
-Result of u(1): -0.33 0.00 
-
-Step2: Calculating r (r := C - uK):
-C: 0.75 0.00 -4.25 2.50 -0.25 
-
-K: 
-1.75 1.00 1.75 -0.50 -0.25 
-0.25 0.00 1.25 -0.50 0.25 
-
-Result(r): 1.33 0.33 -3.67 2.33 -0.33 
-
-Bland's rule: first negative r(i) is r4!
-Step3: Solving system(2): By = K2
-B:
-0.75 0.00 
-0.25 1.00 
-
-K4: 
-1.75 
-1.25 
-
-Result of y(2):2.33 0.67 
-
-Step4: check if y <= 0:
-(y <= 0) is not true!
-Finding optimal t:
-Optimal t: 0.50
-Column 1 leaves base (P)
-
-ETA matrix:
-1.00 2.33 
-0.00 0.67 
-
-Step5: updating x:
-Old x: 0.00 0.33 0.00 3.67 0.00 0.00 0.00 
-New x: 0.00 0.00 0.00 2.50 0.50 0.00 0.00 
-
-------------------------------------------------------
-ITERATION 2:
-Calculating B:
-B = Bo*E1*E2*E3
-Step1: Solving system(1): uB = Cb
-B:
-0.75 1.75 
-0.25 1.25 
-
-Cb: -0.25 -4.25 
-
-Result of u(1): 1.50 -5.50 
+Result of u(1): -1.00 0.00 0.00 
 
 Step2: Calculating r (r := C - uK):
-C: 0.75 0.00 0.00 2.50 -0.25 
+C: 0.00 9.00 1.00 5.00 
 
 K: 
-1.75 1.00 0.00 -0.50 -0.25 
-0.25 0.00 1.00 -0.50 0.25 
+1.00 2.00 1.00 1.00 
+0.00 1.00 2.00 1.00 
+-0.00 -11.00 -4.00 -6.00 
 
-Result(r): -0.50 -1.50 5.50 0.50 1.50 
-
-Bland's rule: first negative r(i) is r2!
-Step3: Solving system(2): By = K0
-B:
-0.75 1.75 
-0.25 1.25 
-
-K2: 
-1.75 
-0.25 
-
-Result of y(2):3.50 -0.50 
-
-Step4: check if y <= 0:
-(y <= 0) is not true!
-Finding optimal t:
-Optimal t: 0.71
-Column 3 leaves base (P)
-
-ETA matrix:
-3.50 0.00 
--0.50 1.00 
-
-Step5: updating x:
-Old x: 0.00 0.00 0.00 2.50 0.50 0.00 0.00 
-New x: 0.00 0.00 0.71 0.00 0.86 0.00 0.00 
-
-------------------------------------------------------
-ITERATION 3:
-Calculating B:
-B = Bo*E1*E2*E3*E4
-Step1: Solving system(1): uB = Cb
-B:
-1.75 1.75 
-0.25 1.25 
-
-Cb: 0.75 -4.25 
-
-Result of u(1): 1.14 -5.00 
-
-Step2: Calculating r (r := C - uK):
-C: -0.25 0.00 0.00 2.50 -0.25 
-
-K: 
-0.75 1.00 0.00 -0.50 -0.25 
-0.25 0.00 1.00 -0.50 0.25 
-
-Result(r): 0.14 -1.14 5.00 0.57 1.29 
-
-Bland's rule: first negative r(i) is r0!
-Step3: Solving system(2): By = K1
-B:
-1.75 1.75 
-0.25 1.25 
-
-K0: 
-1.00 
-0.00 
-
-Result of y(2):0.71 -0.14 
-
-Step4: check if y <= 0:
-(y <= 0) is not true!
-Finding optimal t:
-Optimal t: 1.00
-Column 2 leaves base (P)
-
-ETA matrix:
-0.71 0.00 
--0.14 1.00 
-
-Step5: updating x:
-Old x: 0.00 0.00 0.71 0.00 0.86 0.00 0.00 
-New x: 1.00 0.00 0.00 0.00 1.00 0.00 0.00 
-
-------------------------------------------------------
-ITERATION 4:
-Calculating B:
-B = Bo*E1*E2*E3*E4*E5
-Step1: Solving system(1): uB = Cb
-B:
-1.00 1.75 
-0.00 1.25 
-
-Cb: 0.00 -4.25 
-
-Result of u(1): 0.00 -3.40 
-
-Step2: Calculating r (r := C - uK):
-C: -0.25 0.75 0.00 2.50 -0.25 
-
-K: 
-0.75 1.75 0.00 -0.50 -0.25 
-0.25 0.25 1.00 -0.50 0.25 
-
-Result(r): 0.60 1.60 3.40 0.80 0.60 
+Result(r): 1.00 11.00 2.00 6.00 
 
 (r > 0) is true => optimal value is found!
 ------------------------------------------------------
-Solution: 1.00 0.00 0.00 0.00 1.00 0.00 0.00 
-Optimal value: 5.00
+Solution: 0.00 14.00 1.00 5.00 0.00 0.00 0.00 
+Optimal value: -29.00

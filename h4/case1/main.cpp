@@ -7,7 +7,7 @@
 #include <ctime>
 #include <set>
 #include <iomanip>
-#include "../lib/matrix.hpp"
+#include "../../lib/matrix.hpp"
 
 #define UNUSED_VAR(X) ((void)X)
 

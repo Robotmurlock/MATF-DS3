@@ -1,22 +1,22 @@
 Solving system(canonical form): Ax = b
-c: 0.00 0.00 -1.00 -3.00 
+c: 1.00 1.00 2.00 1.00 
 
 A:
-1.00 0.00 1.00 1.00 
-0.00 1.00 -1.00 2.00 
+1.00 0.00 -2.00 -1.00 
+0.00 1.00 -1.00 1.00 
 
-b: 6.00 8.00 
+b: 1.00 0.00 
 
 
 ------------------------------------------------------
 set_unit_matrix:
-c: 0.00 0.00 -1.00 -3.00 
+c: 1.00 1.00 2.00 1.00 
 
 A:
-1.00 0.00 1.00 1.00 
-0.00 1.00 -1.00 2.00 
+1.00 0.00 -2.00 -1.00 
+0.00 1.00 -1.00 1.00 
 
-b: 6.00 8.00 
+b: 1.00 0.00 
 
 
 Base indexes(P): 0 1 
@@ -24,7 +24,7 @@ Nonbase indexes(Q): 2 3
 Base function value(Fo): 0.00
 ------------------------------------------------------
 Residual simplex: 
-Starting x value: 6.00 8.00 0.00 0.00 
+Starting x value: 1.00 0.00 0.00 0.00 
 
 ------------------------------------------------------
 ITERATION 0:
@@ -33,102 +33,20 @@ B:
 1.00 0.00 
 0.00 1.00 
 
-Cb: 0.00 0.00 
+Cb: 1.00 1.00 
 
-Result of u(1):0.00 0.00 
+Result of u(1):1.00 1.00 
 
 Step2: Calculating r (r := C - uK):
-C: -1.00 -3.00 
+C: 2.00 1.00 
 
 K: 
-1.00 1.00 
--1.00 2.00 
-
-Result(r): -1.00 -3.00 
-
-Bland's rule: first negative r(i) is r2!
-Step3: Solving system(2): By = K0
-B:
-1.00 0.00 
-0.00 1.00 
-
-K2: 
-1.00 
--1.00 
-
-Result of y(2):1.00 -1.00 
-
-Step4: check if y <= 0:
-(y <= 0) is not true!
-Finding optimal t:
-Optimal t: 6.00
-Column 0 leaves base (P)
-Step5: updating x:
-Old x: 6.00 8.00 0.00 0.00 
-New x: 0.00 14.00 6.00 0.00 
-
-------------------------------------------------------
-ITERATION 1:
-Step1: Solving system(1): uB = Cb
-B:
-1.00 0.00 
+-2.00 -1.00 
 -1.00 1.00 
 
-Cb: -1.00 0.00 
-
-Result of u(1):-1.00 0.00 
-
-Step2: Calculating r (r := C - uK):
-C: 0.00 -3.00 
-
-K: 
-1.00 1.00 
-0.00 2.00 
-
-Result(r): 1.00 -2.00 
-
-Bland's rule: first negative r(i) is r3!
-Step3: Solving system(2): By = K1
-B:
-1.00 0.00 
--1.00 1.00 
-
-K3: 
-1.00 
-2.00 
-
-Result of y(2):1.00 3.00 
-
-Step4: check if y <= 0:
-(y <= 0) is not true!
-Finding optimal t:
-Optimal t: 4.67
-Column 1 leaves base (P)
-Step5: updating x:
-Old x: 0.00 14.00 6.00 0.00 
-New x: 0.00 0.00 1.33 4.67 
-
-------------------------------------------------------
-ITERATION 2:
-Step1: Solving system(1): uB = Cb
-B:
-1.00 1.00 
--1.00 2.00 
-
-Cb: -1.00 -3.00 
-
-Result of u(1):-1.67 -0.67 
-
-Step2: Calculating r (r := C - uK):
-C: 0.00 0.00 
-
-K: 
-1.00 0.00 
-0.00 1.00 
-
-Result(r): 1.67 0.67 
+Result(r): 5.00 1.00 
 
 (r > 0) is true => optimal value is found!
 ------------------------------------------------------
-Solution: 0.00 0.00 1.33 4.67 
-Optimal value: -15.33
+Solution: 1.00 0.00 0.00 0.00 
+Optimal value: 1.00
