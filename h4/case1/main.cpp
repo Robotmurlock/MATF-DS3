@@ -64,8 +64,6 @@ std::tuple<std::vector<unsigned>, std::vector<unsigned>, double> set_canonical_m
     // i ~ column, j ~ row
     while(is_not_canonical(A, b)) 
     {
-        std::cout << A << std::endl;
-        std::cout << b << std::endl;
         for(unsigned i=0; i<n; i++)
         {
             if(A.at(i, i)*b.at(0, i) < 0)
@@ -74,14 +72,11 @@ std::tuple<std::vector<unsigned>, std::vector<unsigned>, double> set_canonical_m
                 // Finding all potential base columns:
                 std::vector<unsigned> potential_base_columns;
                 for(unsigned j=i+1; j<m; j++)
-                    if(A.at(i, j)*b.at(0, i) > 0)
+                    if(A.at(i, j)*b.at(0, i) >= EPS)
                     {
                         potential_base_columns.push_back(j);
                     }
-
-                // Picking random column and replacing it with current one in base:
-                unsigned new_column_index = rand() % potential_base_columns.size();
-                unsigned new_column = potential_base_columns.at(new_column_index);
+                unsigned new_column = potential_base_columns.at(0);
                 swap_columns(A, i, new_column);
                 swap_columns(c, i, new_column);
             }
@@ -357,6 +352,7 @@ int main(int argc, char** argv)
         input >> in_c.at(i);
 
     unsigned new_n = n;
+    std::set<unsigned> unit_columns;
     for(unsigned i=0; i<m; i++)
     {
         for(unsigned j=0; j<n; j++)
@@ -379,17 +375,34 @@ int main(int argc, char** argv)
         // x1 + x2 + x3 ... xN <= c
         // => x1 + x2 + x3 ... xN + x = c
         new_n++;
-        for(unsigned j=0; j<m; j++)
-            in_A.at(j).push_back((i==j) ? 1 : 0);
-        in_c.push_back(0);
+        unit_columns.insert(i);
     }
 
+    std::vector<std::vector<double> > A_unit(m);
+    std::vector<std::vector<double> > c_unit(1);
+    for(auto it=unit_columns.begin(); it!=unit_columns.end(); it++)
+    {
+        std::cout << *it << std::endl;
+        for(unsigned j=0; j<m; j++)
+            A_unit.at(j).push_back((*it==j) ? 1 : 0);
+        c_unit.at(0).push_back(0);
+    }
+
+    Matrix A_unit_matrix(A_unit), c_unit_matrix(c_unit);
     Matrix c(in_c), A(in_A), b(in_b);
+    append(c_unit_matrix, c);
+    append(A_unit_matrix, A);
+    A = A_unit_matrix;
+    c = c_unit_matrix;
+
     // Set b to be positive:
     for(unsigned i=0; i<A.height(); i++)
     {
         if(b.at(0, i) < 0)
         {
+            if(unit_columns.find(i) != unit_columns.end())
+                unit_columns.erase(i);
+
             for(unsigned j=0; j<A.width(); j++)
                 A.at(i, j) *= -1;
             b.at(0, i) *= -1;
@@ -402,45 +415,31 @@ int main(int argc, char** argv)
     // Ew + Ax = b
     // w, x >= 0
     // System Ax = b has solution only if subgoal system has solution equal to zero
-    std::set<unsigned> unit_columns;
+
 
     Matrix A1 = identity(A.height());
     append(A1, A);
-
     Matrix c1(1, A1.width());
-    for(unsigned i=0; i<A1.height() - unit_columns.size(); i++)
+
+    for(unsigned i=0; i<A1.height(); i++)
         c1.at(0, i) = 1;
 
-    /*for(int i=A1.width()-1; i>=0; i--)
+    if(!is_not_canonical(A, b))
     {
-        bool is_unit_column = true;
-        unsigned ones_cnt = 0u;
-        unsigned one_index;
-        for(unsigned j=0; j<A1.height(); j++)
+        for(int i=A1.height()-1; i>=0; i--)
         {
-            if(std::fabs(A1.at(j, i)) < EPS)
-                continue;
-            if(std::fabs(A1.at(j, i)-1) < EPS)
+            if(unit_columns.find(i) != unit_columns.end())
             {
-                ones_cnt++;
-                one_index = j;
-                continue;
+                A1 = A1.remove_column(i);
+                c1 = c1.remove_column(i);
             }
-            
-            is_unit_column = false;
-            break;
         }
-        if(std::fabs(c1.at(0, i)) > EPS)
-            is_unit_column = false;
-        if(ones_cnt != 1)
-            is_unit_column = false;
-        if(is_unit_column && unit_columns.find(one_index) == unit_columns.end())
-        {
-            A1 = A1.remove_column(i);
-            c1 = c1.remove_column(i);
-            unit_columns.insert(one_index);
-        }
-    }*/
+    }
+    else
+    {
+        unit_columns.clear();
+    }
+
     #ifdef _DEBUG
         std::cout << "A1:" << std::endl << A1 << std::endl;
         std::cout << "c1:" << std::endl << c1 << std::endl;
@@ -466,14 +465,15 @@ int main(int argc, char** argv)
     {
         if(p >= A1.height())
             break;
-        P1_pseudo_indexes.insert(p);
+        if(unit_columns.find(p) == unit_columns.end())
+            P1_pseudo_indexes.insert(p);
     }
     
     // First n (A1.height()) columns are pseudo variables
     // Columns are removed from right to left so new indexes for matrix variable do not have to be calculated
     // ex: if we remove column 2 then 3 becomes 2, 3 -> 4, etc but 1 stays 1
     for(int i=A1.height()-1; i>=0; i--)
-        if(P1_pseudo_indexes.find(i) == P1_pseudo_indexes.end())
+        if(P1_pseudo_indexes.find(i) == P1_pseudo_indexes.end() && unit_columns.find(i) == unit_columns.end())
             A1 = A1.remove_column(i);
 
     #ifdef _DEBUG   
@@ -500,6 +500,7 @@ int main(int argc, char** argv)
                 row = j;
                 break;
             }
+        std::cout << A1 << std::endl;
 
         for(unsigned j=0; j<A1.width(); j++)
             if(j != i && std::fabs(A1.at(row, j)) > EPS)
