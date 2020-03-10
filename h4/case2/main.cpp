@@ -224,7 +224,7 @@ int main(int argc, char** argv)
                 std::cout << std::endl;
 
                 // STEP3: Finding max c(j)/A(b_negative_index, j) such that A(b_negative_index, j) < 0
-                std::cout << "Finding max c(j)/A(" << b_negative_index 
+                std::cout << "STEP3: Finding max c(j)/A(" << b_negative_index 
                         << ", j) such that A(" << b_negative_index << ", j) < 0" << std::endl;
                 unsigned pivot_index = find_pivot(A, c, b_negative_index);
                 std::cout << "Pivot: A(" << b_negative_index << ", " <<  pivot_index << ")" << std::endl;
