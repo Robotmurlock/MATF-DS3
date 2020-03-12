@@ -41,7 +41,11 @@ std::tuple<std::vector<std::vector<double> >, std::vector<double>, std::vector<d
     return std::make_tuple(c, a, b);
 }
 
-void show_system(const std::vector<std::vector<double> >& c, const std::vector<double>& a, const std::vector<double>& b)
+void show_system(const std::vector<std::vector<double> >& c, 
+                 const std::vector<double>& a, 
+                 const std::vector<double>& b,
+                 const std::set<unsigned>& pseudo_rows, 
+                 const std::set<unsigned>& pseudo_columns)
 {
     std::cout << "system matrix:" << std::endl;
     auto n = a.size(), m = b.size();
@@ -53,10 +57,17 @@ void show_system(const std::vector<std::vector<double> >& c, const std::vector<d
         for(unsigned j=0; j<m-1; j++)
         {
             std::cout.width(dim);
-            std::cout << c.at(i).at(j) << " ";
+            if(pseudo_rows.find(i) != pseudo_rows.end() || pseudo_columns.find(j) != pseudo_columns.end())
+                std::cout << "*";
+            else
+                std::cout << c.at(i).at(j);
+            std::cout << " ";
         }
         std::cout.width(dim);
-        std::cout << c.at(i).at(m-1);
+        if(pseudo_rows.find(i) != pseudo_rows.end() || pseudo_columns.find(m-1) != pseudo_columns.end())
+            std::cout << "*";
+        else
+            std::cout << c.at(i).at(m-1);
         std::cout.width(dim/2);
         std::cout << "|";
         std::cout.width(dim/2);
@@ -417,16 +428,83 @@ void update_system(std::vector<std::vector<std::pair<double, bool> > >& base_mat
 }
 
 double calculate_solution(std::vector<std::vector<double> >& c, 
-                          const std::vector<std::vector<std::pair<double, bool> > >& base_matrix)
+                          const std::vector<std::vector<std::pair<double, bool> > >& base_matrix,
+                          const std::set<unsigned>& pseudo_rows, 
+                          const std::set<unsigned>& pseudo_columns)
 {
     double result = 0;
     unsigned n = base_matrix.size(), m = base_matrix.at(0).size();
 
     for(unsigned i=0; i<n; i++)
+    {
+        if(pseudo_rows.find(i) != pseudo_rows.end())
+            continue;
         for(unsigned j=0; j<m; j++)
+        {
+            if(pseudo_columns.find(j) != pseudo_columns.end())
+                continue;
             result += base_matrix.at(i).at(j).first*c.at(i).at(j);
+        }
+    }
     
     return result;
+}
+
+std::tuple<std::set<unsigned>, std::set<unsigned> >
+    add_pseudo_vars(std::vector<std::vector<double> >& c, 
+        std::vector<double>& a, 
+        std::vector<double>& b)
+{
+    unsigned n = a.size(), m = b.size();
+    std::set<unsigned> pseudo_rows, pseudo_columns;
+
+    double sum_a = 0.0, sum_b = 0.0;
+    for(auto val: a)
+        sum_a += val;
+    for(auto val: b)
+        sum_b += val;
+
+    double diff = sum_a - sum_b;
+    if(std::fabs(diff) < EPS)
+        return std::make_tuple(pseudo_rows, pseudo_columns);
+
+    double pseudo_value = -INF;
+    for(unsigned i=0; i<n; i++)
+        for(unsigned j=0; j<m; j++)
+            pseudo_value = std::max(pseudo_value, c.at(i).at(j));
+
+    pseudo_value += 1000000.0;
+
+    if(diff < 0)
+    {
+        // insert new row
+        std::vector<double> new_row(m, pseudo_value);
+        c.push_back(new_row);
+        a.push_back(std::fabs(diff));
+        pseudo_rows.insert(n);
+    }
+    else
+    {
+        // insert new column
+        for(unsigned i=0; i<n; i++)
+        c.at(i).push_back(pseudo_value);
+        b.push_back(std::fabs(diff));
+        pseudo_columns.insert(m);
+    }
+
+    return std::make_tuple(pseudo_rows, pseudo_columns);
+}
+
+void show_pseudo_vars(const std::set<unsigned>& pseudo_rows, const std::set<unsigned>& pseudo_columns)
+{
+    std::cout << "pseudo rows: ";
+    for(auto v: pseudo_rows)
+        std::cout << v << " ";
+    std::cout << std::endl; 
+    std::cout << "pseudo columns: ";
+    for(auto v: pseudo_columns)
+        std::cout << v << " ";
+    std::cout << std::endl; 
 }
 
 int main(int argc, char** argv)
@@ -442,7 +520,9 @@ int main(int argc, char** argv)
     }
 
     auto[c, a, b] = read_task(input);
-    show_system(c, a, b);
+    auto[pseudo_rows, pseudo_columns] = add_pseudo_vars(c, a, b);
+    show_pseudo_vars(pseudo_rows, pseudo_columns);
+    show_system(c, a, b, pseudo_rows, pseudo_columns);
     // minimal price method:
     auto base_matrix = calculate_system_base(c, a, b);
     show_base_matrix(base_matrix);
@@ -462,7 +542,7 @@ int main(int argc, char** argv)
         // STOP?
         if(theta_i == STOP && theta_j == STOP)
         {
-            std::cout << "Solution: " << calculate_solution(c, base_matrix);
+            std::cout << "Solution: " << calculate_solution(c, base_matrix, pseudo_rows, pseudo_columns);
             return 0;
         }
 
