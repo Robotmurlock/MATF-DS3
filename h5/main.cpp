@@ -132,7 +132,7 @@ std::vector<std::vector<std::pair<double, bool> > >
             {
                 empty_rows.insert(i);
             }
-            if(std::fabs(b.at(j)) < EPS)
+            else if(std::fabs(b.at(j)) < EPS)
             {
                 empty_columns.insert(j);
             }
