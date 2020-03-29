@@ -1,5 +1,10 @@
 #include "graph.hpp"
 
+#define NONE   0
+#define COLUMN 1
+#define ROW    2
+#define UNUSED_VAR(x) ((void)x)
+
 unsigned coords_to_index(unsigned i, unsigned j, unsigned m)
 {
     return i*m + j;
@@ -23,26 +28,37 @@ void Graph::add_edge(int a, int b)
 
 bool is_stable_path(const std::vector<int>& path, unsigned n, unsigned m)
 {
-    std::vector<int> row_sum(n, 0), column_sum(m, 0);
-
-    for(unsigned k=0; k<path.size()-1; k++)
+    UNUSED_VAR(n);
+    int last_state = NONE;
+    int current_state = NONE;
+    for(unsigned i=1; i<path.size(); i++)
     {
-        int p = path.at(k);
-        auto[i, j] = index_to_coords(p, m);
-        
-        int theta = (k%2==0) ? 1 : -1;
+        auto[x1, y1] = index_to_coords(path.at(i-1), m);
+        auto[x2, y2] = index_to_coords(path.at(i), m);
 
-        row_sum.at(i) += theta;
-        column_sum.at(j) += theta;
+        if(x1 == x2)
+            current_state = ROW;
+        else if(y1 == y2)
+            current_state = COLUMN;
+        else
+            return false;
+
+        if(current_state == last_state)
+            return false;
+        last_state = current_state;
     }
 
-    for(unsigned i=0; i<n; i++)
-        if(row_sum.at(i) != 0)
-            return false;
-    
-    for(unsigned j=0; j<m; j++)
-        if(column_sum.at(j) != 0)
-            return false;
+    auto[x1, y1] = index_to_coords(path.at(path.size()-1), m);
+    auto[x2, y2] = index_to_coords(path.at(0), m);
+    if(x1 == x2)
+        current_state = ROW;
+    else if(y1 == y2)
+        current_state = COLUMN;
+    else 
+        return false;
+
+    if(current_state == last_state)
+        return false;
 
     return true;
 }
