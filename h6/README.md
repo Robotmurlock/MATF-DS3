@@ -8,7 +8,7 @@ bash script.sh examples/1.txt
  
 Umesto 1.txt moze da bude i 2.txt, 3.txt, ?.txt ...
 
-Drugi nacin za pokretanje programa:
+Drugi nacin za pokretanje programa preko terminala:
 
 make
 ./program examples/1.txt
