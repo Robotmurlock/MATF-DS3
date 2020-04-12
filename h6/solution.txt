@@ -1,0 +1,31 @@
+Initial game matrix: 
+     2      1      2      3 
+     3    1.5      1      2 
+     2      2      1      1 
+     1      1      1      1 
+
+Game matrix after removing dominated rows and columns: 
+     1      2 
+     2      1 
+
+First problem:
+(min) -v
+	1*x1 2*x2 >= v
+	2*x1 1*x2 >= v
+	x1 + x2 = 1
+	x1, x2 >= 0
+
+Second problem:
+(min) v
+	1*y1 2*y2 <= v
+	2*y1 1*y2 <= v
+	y1 + y2 = 1
+	y1, y2 >= 0
+
+Solution for the first problem (min -v) using Fourier–Motzkin elimination:
+VAR is in [-1.5, -0]!
+Solution: -1.5
+
+Solution for the second problem (min v) using Fourier–Motzkin elimination:
+VAR is in [1.5, inf)!
+Solution: 1.5
