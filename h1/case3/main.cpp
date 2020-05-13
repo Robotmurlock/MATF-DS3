@@ -2,6 +2,7 @@
 #include <fstream>
 #include <vector>
 #include <limits>
+#include <cstring>
 
 #define INF std::numeric_limits<double>::infinity()
 
@@ -193,6 +194,9 @@ int main(int argc, char** argv)
 {
     // *INPUT FILE*
     const char* path = (argc >= 2) ? argv[1] : "input.txt";
+    // This modification is only used as support for h6 problem (Matrix Game)
+    // First variable can be negative if Matrix game is being solved
+    int start_from = (argc >= 3 && strcmp(argv[2], "matrix_game")==0) ? 1 : 0;
 
     std::ifstream input(path);
     if(input.fail())
@@ -228,7 +232,9 @@ int main(int argc, char** argv)
         b.at(i) *= -1;
     }
     
-    for(unsigned i=0; i<n; i++)
+    // start_from is equal to 0 is this program is not used for solving matrix_game problem
+    // where first variable is game value which can be negative
+    for(unsigned i=start_from; i<n; i++)
     {
         std::vector<double> tmp(n, 0);
         tmp.at(i) = 1;

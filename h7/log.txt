@@ -1,0 +1,64 @@
+Graph:
+Node 0: 
+	 Child: 1, Weight: 7
+	 Child: 3, Weight: 5
+
+Node 1: 
+	 Child: 0, Weight: 7
+	 Child: 2, Weight: 8
+	 Child: 3, Weight: 9
+	 Child: 4, Weight: 7
+
+Node 2: 
+	 Child: 1, Weight: 8
+	 Child: 4, Weight: 5
+
+Node 3: 
+	 Child: 0, Weight: 5
+	 Child: 1, Weight: 9
+	 Child: 4, Weight: 15
+	 Child: 5, Weight: 6
+
+Node 4: 
+	 Child: 1, Weight: 7
+	 Child: 2, Weight: 5
+	 Child: 3, Weight: 15
+	 Child: 5, Weight: 8
+	 Child: 6, Weight: 9
+
+Node 5: 
+	 Child: 3, Weight: 6
+	 Child: 4, Weight: 8
+	 Child: 6, Weight: 11
+
+Node 6: 
+	 Child: 4, Weight: 9
+	 Child: 5, Weight: 11
+
+Graph:
+Node 0: 
+	 Child: 3, Weight: 5
+	 Child: 1, Weight: 7
+
+Node 1: 
+	 Child: 0, Weight: 7
+	 Child: 4, Weight: 7
+
+Node 2: 
+	 Child: 4, Weight: 5
+
+Node 3: 
+	 Child: 0, Weight: 5
+	 Child: 5, Weight: 6
+
+Node 4: 
+	 Child: 2, Weight: 5
+	 Child: 1, Weight: 7
+	 Child: 6, Weight: 9
+
+Node 5: 
+	 Child: 3, Weight: 6
+
+Node 6: 
+	 Child: 4, Weight: 9
+
