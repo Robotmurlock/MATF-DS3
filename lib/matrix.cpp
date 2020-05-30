@@ -350,3 +350,8 @@ void swap_columns(Matrix& A, unsigned i, unsigned j)
     for(unsigned k=0; k<A.height(); k++)
         std::swap(A.at(k, i), A.at(k, j));
 }
+
+std::vector<std::vector<double> > Matrix::to_cpp_matrix() const
+{
+    return m_elements;
+}

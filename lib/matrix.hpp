@@ -1,3 +1,6 @@
+#ifndef __MATRIX__
+#define __MATRIX__
+
 #include <vector>
 #include <iostream>
 #include <functional>
@@ -68,8 +71,12 @@ public:
     Matrix remove_column(unsigned index);
     Matrix remove_row(unsigned index);
 
+    std::vector<std::vector<double> > to_cpp_matrix() const;
+
     friend void append(Matrix& A, const Matrix& B);
     friend void swap_columns(Matrix& A, unsigned i, unsigned j);
 };
 
 Matrix identity(unsigned size);
+
+#endif

@@ -1,24 +1,4 @@
-#include <iostream>
-#include <fstream>
-#include <utility>
-#include <climits>
-#include <cfloat>
-#include <cmath>
-#include <ctime>
-#include <set>
-#include <iomanip>
-#include "../../lib/matrix.hpp"
-
-#define UNUSED_VAR(X) ((void)X)
-
-#define STOP ((unsigned)-1)
-#define INF DBL_MAX
-
-#define _DEBUG
-#define BAR "------------------------------------------------------"
-
-// precision: EPS
-#define EPS 0.0001
+#include "simplex.hpp"
 
 template<typename T>
 void vector_print(const std::vector<T>& v)
@@ -220,8 +200,9 @@ bool has_all_negative(const Matrix& y)
     return true;
 }
 
-std::pair<double, Matrix> residual_simplex(Matrix& A, Matrix& b, Matrix& c,
-                                           std::vector<unsigned>& P, std::vector<unsigned>& Q, double Fo)
+std::tuple<double, Matrix, Matrix, Matrix, Matrix> 
+residual_simplex(Matrix& A, Matrix& b, Matrix& c,
+                 std::vector<unsigned>& P, std::vector<unsigned>& Q, double Fo)
 {
 
     // Preprocess: Calculating x:
@@ -287,7 +268,7 @@ std::pair<double, Matrix> residual_simplex(Matrix& A, Matrix& b, Matrix& c,
         if(has_all_negative(y))
         {
             std::cout << "Function does not reach optimal value because (y <= 0) is true!" << std::endl;
-            return std::make_pair(0, Matrix());
+            return std::make_tuple(0, Matrix(), Matrix(), Matrix(), Matrix());
         }
         std::cout << "(y <= 0) is not true!" << std::endl;
         std::cout << "Finding optimal t:" << std::endl;
@@ -311,7 +292,7 @@ std::pair<double, Matrix> residual_simplex(Matrix& A, Matrix& b, Matrix& c,
 
     // c*(x.transpose()) is matrix with dimension 1x1
     double F = -Fo + (c*(x.transpose())).at(0, 0);
-    return std::make_pair(F, x);
+    return std::make_tuple(F, x, A, b, c);
 }
 
 void show_system(const Matrix& A, const Matrix& b, const Matrix& c)
@@ -322,18 +303,16 @@ void show_system(const Matrix& A, const Matrix& b, const Matrix& c)
     std::cout << "b: " << b << std::endl << std::endl;
 }
 
-int main(int argc, char** argv)
+std::tuple<double, Matrix, Matrix, Matrix, Matrix> simplex(const std::string& problem)
 {
     std::cout << std::fixed;
     std::cout << std::setprecision(2);
-    // *INPUT FILE*
-    const char* path = (argc >= 2) ? argv[1] : "input.txt";
 
-    std::ifstream input(path);
+    std::stringstream input(problem);
     if(input.fail())
     {
         std::cout << "Failed to open \"input.txt\"!" << std::endl;
-        return 1;
+        return std::make_tuple(0, Matrix(), Matrix(), Matrix(), Matrix());
     }
 
     // *TASK INPUT*
@@ -446,15 +425,18 @@ int main(int argc, char** argv)
     #endif
 
     auto[P1, Q1, Fo1] = set_canonical_matrix(A1, b, c1);
-    auto[F1, x1] = residual_simplex(A1, b, c1, P1, Q1, Fo1);
+    auto[F1, x1, _A, _b, _c] = residual_simplex(A1, b, c1, P1, Q1, Fo1);
     UNUSED_VAR(x1);
+    UNUSED_VAR(_A);
+    UNUSED_VAR(_b);
+    UNUSED_VAR(_c);
 
     std::cout << F1 << std::endl;
 
     if(std::fabs(F1) > EPS)
     {
         std::cout << "There is no solution" << std::endl;
-        return 0;
+        return std::make_tuple(0, Matrix(), Matrix(), Matrix(), Matrix());
     }
 
     // STEP2: Removing pseudo variables
@@ -552,10 +534,10 @@ int main(int argc, char** argv)
     // where A2*x = b2 and x >= 0
 
     auto[P2, Q2, Fo2] = set_canonical_matrix(A2, b2, c);
-    auto[F2, x2] = residual_simplex(A2, b2, c, P2, Q2, Fo2);
+    auto[F2, x2, A_final, b_final, c_final] = residual_simplex(A2, b2, c, P2, Q2, Fo2);
 
     std::cout << "Solution: " << x2;
     std::cout << "Optimal value: " << F2 << std::endl;
 
-    return 0;
+    return std::make_tuple(F2, x2, A_final, b_final, c_final);
 }
