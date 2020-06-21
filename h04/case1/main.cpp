@@ -28,11 +28,11 @@ void vector_print(const std::vector<T>& v)
     std::cout << std::endl;
 }
 
-bool is_not_canonical(const Matrix& A, const Matrix& b)
+bool is_not_canonical(const Matrix& A, const Matrix& b, const Matrix& c)
 {
     // Checking if b > 0
     for(unsigned i=0; i<b.width(); i++)
-        if(b.at(0, i) < 0)
+        if(b.at(0, i) < -EPS)
             return true;
 
     // Checking if b has canonical base
@@ -45,11 +45,17 @@ bool is_not_canonical(const Matrix& A, const Matrix& b)
     // A.at(i, j) might be 0.99999999
 
     for(unsigned i=0; i<A.height(); i++)
+    {
+        if(std::fabs(c.at(0, i)) > EPS)
+            return true;
         for(unsigned j=0; j<A.height(); j++)
+        {
             if(i == j && std::fabs(A.at(i, j)-1) > EPS)
                 return true;
             else if(i != j && std::fabs(A.at(i, j)) > EPS)
                 return true;
+        }
+    }
 
     return false;
 }
@@ -62,11 +68,11 @@ std::tuple<std::vector<unsigned>, std::vector<unsigned>, double> set_canonical_m
     auto m = A.width();
     double Fo = 0.0;
     // i ~ column, j ~ row
-    while(is_not_canonical(A, b)) 
+    while(is_not_canonical(A, b, c)) 
     {
         for(unsigned i=0; i<n; i++)
         {
-            if(A.at(i, i)*b.at(0, i) < 0)
+            if(std::fabs(A.at(i, i)) < EPS || A.at(i, i)*b.at(0, i) < -EPS)
             {
                 // If b(i) is negative then we have to pick different columns for base
                 // Finding all potential base columns:
@@ -153,7 +159,7 @@ Matrix get_Cq(const Matrix& c, const std::vector<unsigned>& Q)
 unsigned get_first_negative(const Matrix& r)
 {
     for(unsigned i=0; i<r.width(); i++)
-        if(r.at(0, i) < 0)
+        if(r.at(0, i) < -EPS)
             return i;
     return STOP;
 }
@@ -176,7 +182,7 @@ std::pair<double, unsigned> get_t_opt(const Matrix& x, const Matrix& y, const st
     for(unsigned i=0; i<y.width(); i++)
     {
         double val = x.at(0, P.at(i))/y.at(0, i);
-        if(y.at(0, i) > 0 && val < t)
+        if(y.at(0, i) > EPS && val < t)
         {
             t = val;
             t_index = P.at(i);
@@ -215,7 +221,7 @@ void update_P_Q(std::vector<unsigned>& P, std::vector<unsigned>& Q, unsigned t_i
 bool has_all_negative(const Matrix& y)
 {
     for(unsigned i=0; i<y.width(); i++)
-        if(y.at(0, i) > 0)
+        if(y.at(0, i) > EPS)
             return false;
     return true;
 }
@@ -352,7 +358,7 @@ int main(int argc, char** argv)
         input >> in_c.at(i);
 
     unsigned new_n = n;
-    std::set<unsigned> unit_columns;
+    std::vector<int> equality_columns;
     for(unsigned i=0; i<m; i++)
     {
         for(unsigned j=0; j<n; j++)
@@ -361,7 +367,10 @@ int main(int argc, char** argv)
         input >> in_b.at(i);
 
         if(eq_sign == "=")
+        {
+            equality_columns.push_back(i);
             continue;
+        }
         
         // if sign is > then transform it to <
         if(eq_sign == ">")
@@ -375,33 +384,29 @@ int main(int argc, char** argv)
         // x1 + x2 + x3 ... xN <= c
         // => x1 + x2 + x3 ... xN + x = c
         new_n++;
-        unit_columns.insert(i);
     }
 
     std::vector<std::vector<double> > A_unit(m);
-    std::vector<std::vector<double> > c_unit(1);
-    for(auto it=unit_columns.begin(); it!=unit_columns.end(); it++)
-    {
-        for(unsigned j=0; j<m; j++)
-            A_unit.at(j).push_back((*it==j) ? 1 : 0);
-        c_unit.at(0).push_back(0);
-    }
-
-    Matrix A_unit_matrix(A_unit), c_unit_matrix(c_unit);
+    std::vector<std::vector<double> > c_unit(1, std::vector<double>(m, 0.0));
+    Matrix A_unit_matrix = identity(m); 
+    Matrix c_unit_matrix(c_unit);
     Matrix c(in_c), A(in_A), b(in_b);
     append(c_unit_matrix, c);
     append(A_unit_matrix, A);
     A = A_unit_matrix;
     c = c_unit_matrix;
 
+    for(int col: equality_columns)
+    {
+        A = A.remove_column(col);
+        c = c.remove_column(col);
+    }
+
     // Set b to be positive:
     for(unsigned i=0; i<A.height(); i++)
     {
-        if(b.at(0, i) < 0)
+        if(b.at(0, i) < -EPS)
         {
-            if(unit_columns.find(i) != unit_columns.end())
-                unit_columns.erase(i);
-
             for(unsigned j=0; j<A.width(); j++)
                 A.at(i, j) *= -1;
             b.at(0, i) *= -1;
@@ -423,22 +428,6 @@ int main(int argc, char** argv)
     for(unsigned i=0; i<A1.height(); i++)
         c1.at(0, i) = 1;
 
-    if(!is_not_canonical(A, b))
-    {
-        for(int i=A1.height()-1; i>=0; i--)
-        {
-            if(unit_columns.find(i) != unit_columns.end())
-            {
-                A1 = A1.remove_column(i);
-                c1 = c1.remove_column(i);
-            }
-        }
-    }
-    else
-    {
-        unit_columns.clear();
-    }
-
     #ifdef _DEBUG
         std::cout << "A1:" << std::endl << A1 << std::endl;
         std::cout << "c1:" << std::endl << c1 << std::endl;
@@ -449,13 +438,12 @@ int main(int argc, char** argv)
     auto[F1, x1] = residual_simplex(A1, b, c1, P1, Q1, Fo1);
     UNUSED_VAR(x1);
 
-    std::cout << F1 << std::endl;
-
     if(std::fabs(F1) > EPS)
     {
         std::cout << "There is no solution" << std::endl;
         return 0;
     }
+
 
     // STEP2: Removing pseudo variables
     // STEP1a: Removing all variables that are not in base (their indexes are not in P1)
@@ -464,15 +452,14 @@ int main(int argc, char** argv)
     {
         if(p >= A1.height())
             break;
-        if(unit_columns.find(p) == unit_columns.end())
-            P1_pseudo_indexes.insert(p);
+        P1_pseudo_indexes.insert(p);
     }
     
     // First n (A1.height()) columns are pseudo variables
     // Columns are removed from right to left so new indexes for matrix variable do not have to be calculated
     // ex: if we remove column 2 then 3 becomes 2, 3 -> 4, etc but 1 stays 1
     for(int i=A1.height()-1; i>=0; i--)
-        if(P1_pseudo_indexes.find(i) == P1_pseudo_indexes.end() && unit_columns.find(i) == unit_columns.end())
+        if(P1_pseudo_indexes.find(i) == P1_pseudo_indexes.end())
             A1 = A1.remove_column(i);
 
     #ifdef _DEBUG   
@@ -541,8 +528,11 @@ int main(int argc, char** argv)
 
     #ifdef _DEBUG
         std::cout << "new system:" << std::endl;
+        std::cout << "A2:" << std::endl;
         std::cout << A2 << std::endl;
+        std::cout << "b2:" << std::endl;
         std::cout << b2 << std::endl;
+        std::cout << "c:" << std::endl;
         std::cout << c  << std::endl;
     #endif
 
