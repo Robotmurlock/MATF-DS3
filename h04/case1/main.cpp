@@ -396,10 +396,12 @@ int main(int argc, char** argv)
     A = A_unit_matrix;
     c = c_unit_matrix;
 
+    int offset = 0;
     for(int col: equality_columns)
     {
-        A = A.remove_column(col);
-        c = c.remove_column(col);
+        A = A.remove_column(col - offset);
+        c = c.remove_column(col - offset);
+        offset++;
     }
 
     // Set b to be positive:

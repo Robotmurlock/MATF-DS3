@@ -71,6 +71,14 @@ public:
 
     }
 
+    bool is_invalid() const
+    {
+        for(unsigned i=0; i<m_variables-1; i++)
+            if(std::fabs(m_A.back().at(i)) > EPS)
+                return false;
+        return true;
+    }
+
 };
 
 bool is_x_integer(std::vector<double> x)
@@ -135,6 +143,12 @@ int main(int argc, char** argv)
     {
         SimplexProblemDefinition problem(result_A, result_b, result_c, result_F);
         std::cout << problem.format() << std::endl;
+        if(problem.is_invalid())
+        {
+            std::cout << "There is not solution!" << std::endl;
+            return 0;
+        }
+        
         auto result = simplex(problem.format());
         result_F = std::get<0>(result);
         result_x = std::get<1>(result);

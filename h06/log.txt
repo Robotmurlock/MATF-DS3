@@ -22,10 +22,3 @@ Second problem:
 	y1 + y2 = 1
 	y1, y2 >= 0
 
-Solution for the first problem (min -v) using Fourier–Motzkin elimination:
-VAR is in [-1.5, inf)!
-Solution: -1.5
-
-Solution for the second problem (min v) using Fourier–Motzkin elimination:
-VAR is in [1.5, inf)!
-Solution: 1.5
