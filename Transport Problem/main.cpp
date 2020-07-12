@@ -16,6 +16,8 @@
 
 #define INF std::numeric_limits<double>::infinity()
 
+#define BAR "*********************************************************************\n"
+
 #define EPS (0.000001)
 #define STOP ((unsigned)(-1))
 
@@ -507,19 +509,13 @@ void show_pseudo_vars(const std::set<unsigned>& pseudo_rows, const std::set<unsi
     std::cout << std::endl; 
 }
 
-int main(int argc, char** argv)
+double solve_transport_problem(
+    std::vector<std::vector<double> >& c, 
+    std::vector<double>& a, 
+    std::vector<double>& b 
+)
 {
-    // *INPUT FILE*
-    const char* path = (argc >= 2) ? argv[1] : "input.txt";
-
-    std::ifstream input(path);
-    if(input.fail())
-    {
-        std::cout << "Failed to open \"input.txt\"!" << std::endl;
-        return 1;
-    }
-
-    auto[c, a, b] = read_task(input);
+    std::cout << BAR << BAR << BAR;
     auto[pseudo_rows, pseudo_columns] = add_pseudo_vars(c, a, b);
     show_pseudo_vars(pseudo_rows, pseudo_columns);
     show_system(c, a, b, pseudo_rows, pseudo_columns);
@@ -542,8 +538,10 @@ int main(int argc, char** argv)
         // STOP?
         if(theta_i == STOP && theta_j == STOP)
         {
-            std::cout << "Solution: " << calculate_solution(c, base_matrix, pseudo_rows, pseudo_columns);
-            return 0;
+            const double result = calculate_solution(c, base_matrix, pseudo_rows, pseudo_columns);
+            std::cout << "Solution: " << result << std::endl;
+            std::cout << BAR << BAR << BAR;
+            return result;
         }
 
         auto[cycle, theta] = find_cycle(theta_i, theta_j, base_matrix);
@@ -552,7 +550,22 @@ int main(int argc, char** argv)
         update_system(base_matrix, cycle, theta, theta_i, theta_j);
         show_base_matrix(base_matrix);
     }
+}
 
+int main(int argc, char** argv)
+{
+    // *INPUT FILE*
+    const char* path = (argc >= 2) ? argv[1] : "input.txt";
+
+    std::ifstream input(path);
+    if(input.fail())
+    {
+        std::cout << "Failed to open \"input.txt\"!" << std::endl;
+        return 1;
+    }
+
+    auto[c, a, b] = read_task(input);
+    solve_transport_problem(c, a, b);
     return 0;
 }
 
