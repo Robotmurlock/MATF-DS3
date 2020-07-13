@@ -109,7 +109,7 @@ std::vector<std::vector<std::pair<double, bool> > >
 
     // We can't use cnts_rows or cnts_columns because x(i, j) = a(i) or x(i, j) = b(j)
     std::vector<unsigned> cnts_rows(n, 0u), cnts_columns(m, 0u);
-    bool exclude_row_over_column = true;
+    unsigned used_rows = 0, used_columns = 0;    
     // min heap (priority queue) is used as an optimization for this function for O(n*m*log(n*m)) time complexity
     // instead of O((n+m)*n*m) time complexity
     std::priority_queue<cell, std::vector<cell>, std::greater<cell> > candidates;
@@ -135,23 +135,26 @@ std::vector<std::vector<std::pair<double, bool> > >
 
             if(std::fabs(a.at(i)) < EPS && std::fabs(b.at(j)) < EPS)
             {
-                if(exclude_row_over_column)
+                if(used_rows <= used_columns)
                 {
                     cnts_rows.at(i)++;
+                    used_rows++;
                 }
                 else
                 {
                     cnts_columns.at(j)++;
+                    used_columns++;
                 }
-                exclude_row_over_column = !exclude_row_over_column;
             }
             else if(std::fabs(a.at(i)) < EPS)
             {
                 cnts_rows.at(i)++;
+                used_rows++;
             }
             else
             {
                 cnts_columns.at(j)++;
+                used_columns++;
             }
         }
     }
@@ -388,7 +391,7 @@ std::tuple<std::vector<int>, double>
         }
     }
 
-    auto cycle = g.hamiltonian_cycle(coords_to_index(theta_i, theta_j, m), n, m);
+    auto cycle = g.cycle(coords_to_index(theta_i, theta_j, m), n, m);
 
     for(unsigned k=0; k<cycle.size(); k++)
     {

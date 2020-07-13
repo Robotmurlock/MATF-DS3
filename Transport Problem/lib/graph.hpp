@@ -13,5 +13,5 @@ private:
 public:
     Graph(unsigned n);
     void add_edge(int a, int b);
-    std::vector<int> hamiltonian_cycle(int start, unsigned n, unsigned m);
+    std::vector<int> cycle(int start, unsigned n, unsigned m);
 };

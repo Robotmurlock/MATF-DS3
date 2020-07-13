@@ -63,7 +63,7 @@ bool is_stable_path(const std::vector<int>& path, unsigned n, unsigned m)
     return true;
 }
 	
-std::vector<int> Graph::hamiltonian_cycle(int start, unsigned t_n, unsigned t_m) {
+std::vector<int> Graph::cycle(int start, unsigned t_n, unsigned t_m) {
     std::vector<int> parent(size, -1);
     std::vector<bool> on_stack(size, false);
 
