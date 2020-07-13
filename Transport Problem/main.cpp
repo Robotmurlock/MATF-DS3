@@ -107,8 +107,9 @@ std::vector<std::vector<std::pair<double, bool> > >
     auto n = a.size(), m = b.size();
     std::vector<std::vector<std::pair<double, bool> > > base_matrix (n, std::vector<std::pair<double, bool> >(m, std::make_pair(0.0, false)));
 
-    // We can't use empty_rows or empty_columns because x(i, j) = a(i) or x(i, j) = b(j)
+    // We can't use cnts_rows or cnts_columns because x(i, j) = a(i) or x(i, j) = b(j)
     std::vector<unsigned> cnts_rows(n, 0u), cnts_columns(m, 0u);
+    bool exclude_row_over_column = true;
     // min heap (priority queue) is used as an optimization for this function for O(n*m*log(n*m)) time complexity
     // instead of O((n+m)*n*m) time complexity
     std::priority_queue<cell, std::vector<cell>, std::greater<cell> > candidates;
@@ -120,11 +121,10 @@ std::vector<std::vector<std::pair<double, bool> > >
     unsigned iteration = 0;
     while(iteration < n+m-1)
     {
-        std::cout << candidates.size() << " " << iteration << std::endl;
-        if(candidates.size() > 100)
-            break;
         int i = candidates.top().i;
         int j = candidates.top().j;
+        candidates.pop();
+
         if(cnts_rows.at(i) == 0 && cnts_columns.at(j) == 0)
         {
             double min_ab = std::min(a.at(i), b.at(j));
@@ -133,16 +133,27 @@ std::vector<std::vector<std::pair<double, bool> > >
             a.at(i) -= min_ab;
             b.at(j) -= min_ab;
 
-            if(std::fabs(a.at(i)) < EPS)
+            if(std::fabs(a.at(i)) < EPS && std::fabs(b.at(j)) < EPS)
+            {
+                if(exclude_row_over_column)
+                {
+                    cnts_rows.at(i)++;
+                }
+                else
+                {
+                    cnts_columns.at(j)++;
+                }
+                exclude_row_over_column = !exclude_row_over_column;
+            }
+            else if(std::fabs(a.at(i)) < EPS)
             {
                 cnts_rows.at(i)++;
             }
-            else if(std::fabs(b.at(j)) < EPS)
+            else
             {
                 cnts_columns.at(j)++;
             }
         }
-        candidates.pop();
     }
 
     return base_matrix;
